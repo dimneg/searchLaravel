@@ -36,7 +36,7 @@
 											<form method="post" action="{{ route('home') }}/en/advancedsearch" id="searchFormCompanies">
 												<input name="_token" type="hidden" value="{{ csrf_token() }}">
 												<div style="margin:20px 0px; display:inline-block; width:100%;">
-													<input type="text" id="searchKey" name="searchKey" value="{{ $varKeyword }}" class="searchText" placeholder="Αναζήτηση με ΑΦΜ & επωνυμία σε 1.340.567 επιχειρήσεις">
+													<input type="text" id="searchKey" name="searchKey" value="{{ $varKeyword }}" class="searchText" placeholder="Αναζήτηση με ΑΦΜ, ΓΕΜΗ & επωνυμία σε 1.340.567 επιχειρήσεις">
 													<input type="submit" value="Search" class="searchSubmit">
 													<div class="error" style="float:left; margin-top:5px;">Το πεδίο είναι υποχρεωτικό!</div>
 												</div>

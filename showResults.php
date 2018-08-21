@@ -118,14 +118,14 @@ class showResults {
                    
                    
                 if ($uniqueResults[$i]['db'] === 'lb_fr' || $uniqueResults[$i]['db'] === 'lb_companies' ){
-                    $table_str .= 'Τύπος: '.$this->hide_not_avail($uniqueResults[$i]['orgType']);	
-                    $table_str .= '&nbsp Αρ. Γ.Ε.Μ.Η.: '.$this->hide_not_avail($uniqueResults[$i]['gemhNumber']);	
-                    $table_str .= ' &nbsp Επιμελητήριο: '.$this->hide_not_avail($uniqueResults[$i]['chamber']);
+                    $table_str .= $this->hide_not_avail($uniqueResults[$i]['orgTypeFront']);	
+                    $table_str .= '&nbsp Γ.Ε.Μ.Η.: '.$this->hide_not_avail($uniqueResults[$i]['gemhNumber']);	
+                    $table_str .= ' &nbsp'.$this->hide_not_avail($uniqueResults[$i]['chamber']);
                     $table_str .=  ' &nbsp [Ημ/νία απόδοσης Γ.Ε.Μ.Η.: '.  $this->convertDate($uniqueResults[$i]['gemhDate']).']</br>';	
                 }
                 else {
                     if ($uniqueResults[$i]['db'] === 'lb_no_gemh'){
-                         $table_str .= 'Τύπος: '.$this->hide_not_avail($uniqueResults[$i]['orgType']);	
+                         $table_str .= $this->hide_not_avail($uniqueResults[$i]['orgTypeFront']);	
                     }
                     else {
                         if ($uniqueResults[$i]['db'] === 'lb_persons'){

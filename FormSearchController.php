@@ -43,6 +43,100 @@ class FormSearchController extends Controller
      */
     public function index(Request $request, $lang = null)
     {
+        //$isdirector = $request->input("isdirector"); 
+        //$search =  $request->input("searchKey"); 
+       
+        $table_str = "";
+
+        //$urlparam = "";
+
+        $lang = $this->setLanguage($lang);
+
+        $dayName = $this->getDayName($lang);
+        $monthName = $this->getMonthName($lang);
+        $dayMonthNum = date("d");
+        $monthNum = date('n', strtotime("first day of -1 month"));
+        $monthNamePrev = $this->getMonthNamePrev($lang);
+        
+        if ($lang == "en") {
+            $qry_lang = "en";
+        } else {
+            $qry_lang = "el";
+        }
+
+    
+
+        return view('search.form')->with(compact('monthNum', 'monthName', 'dayName', 'dayMonthNum', 'lang'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        //
+    }
+
+    public function index_test(Request $request, $lang = null)
+    {
         $isdirector = $request->input("isdirector"); 
         $search =  $request->input("searchKey"); 
        
@@ -117,21 +211,21 @@ class FormSearchController extends Controller
                 
                 if (is_numeric($varKeyword)) { //probaby afm
 //echo "1";                    
-                    $searchvar1 = $search->getAllPersonsCouch(config('search.DbPath'), config('search.personscouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'), config('search.companiesUrl'),'vat');  
+                    $searchvar1 = $search->getAllPersonsCouch(config('search.DbPath'),config('search.lucenePath'), config('search.personscouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'), config('search.companiesUrl'),'vat');  
                     $searchvar2 = NULL;     
 
                 }
                 else {
 
                      if (count($words) === 1){
-              $searchvar1=$search->getAllPersonsCouch(config('search.DbPath'), config('search.personscouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'), config('search.companiesUrl'),'term');      
-              $searchvar2=$search->getAllPersonsCouch(config('search.DbPath'), config('search.MPcouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'), config('search.companiesUrl'),'term'); 
+              $searchvar1=$search->getAllPersonsCouch(config('search.DbPath'),config('search.lucenePath'), config('search.personscouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'), config('search.companiesUrl'),'term');      
+              $searchvar2=$search->getAllPersonsCouch(config('search.DbPath'), config('search.lucenePath'),config('search.MPcouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'), config('search.companiesUrl'),'term'); 
          }
          else {
              $termsArray = $newKeyWord->prepareExactKeyword($varKeyword);
              $exactFullKeyword = $termsArray[3];
-             $searchvar1=$search->getAllPersonsCouch(config('search.DbPath'), config('search.personscouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'), config('search.companiesUrl'),'term');      
-             $searchvar2=$search->getAllPersonsCouch(config('search.DbPath'), config('search.MPcouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'), config('search.companiesUrl'),'term'); 
+             $searchvar1=$search->getAllPersonsCouch(config('search.DbPath'),config('search.lucenePath'), config('search.personscouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'), config('search.companiesUrl'),'term');      
+             $searchvar2=$search->getAllPersonsCouch(config('search.DbPath'),config('search.lucenePath'), config('search.MPcouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'), config('search.companiesUrl'),'term'); 
          }
 //echo "2";                    
                     // $searchvar1 = $search->getAllPersonsCouch(config('search.DbPath'), config('search.personscouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'), config('search.companiesUrl'),'term'); 
@@ -164,21 +258,21 @@ class FormSearchController extends Controller
             } else {
                 
                 if (is_numeric($varKeyword)) { //probaby afm
-                    if (strlen(utf8_decode($varKeyword)) ==9 ) {
+                    if (strlen(utf8_decode($varKeyword)) == 9 ) {
                          #$search->getAll(solrPath,companiesSolrCore,'vat', $varKeyword,'',companiesUrl);
                          #$search->getAll(solrPath,FRSolrCore,'vat', $varKeyword,'',companiesUrl);  
                         # $search->getAllCompaniesCouch(DbPath, companiescouchDB ,'buyerVatIdOrName','by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, couchUser, couchPass,companiesUrl); 
-                            $searchvar1 = $search->getAllCompaniesCouch(config('search.DbPath'), config('search.FRcouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'vat');    
-                            $searchvar2 = $search->getAllCompaniesCouch(config('search.DbPath'), config('search.companiescouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'vat');  
-                            $searchvar3 = $search->getAllCompaniesCouch(config('search.DbPath'), config('search.nonGemhcouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'vat'); 
+                            $searchvar1 = $search->getAllCompaniesCouch(config('search.DbPath'),config('search.lucenePath'), config('search.FRcouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'vat');    
+                            $searchvar2 = $search->getAllCompaniesCouch(config('search.DbPath'),config('search.lucenePath'), config('search.companiescouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'vat');  
+                            $searchvar3 = $search->getAllCompaniesCouch(config('search.DbPath'),config('search.lucenePath'), config('search.nonGemhcouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'vat'); 
                             #$search->getAllCompaniesCouch(DbPath, nonGemhcouchDB , $DesignDoc, $Index, $Wc, $Limit, $Sort, $varKeyword, $couchUser, $couchPass,companiesUrl);
                             $searchvar = array_merge((array)$searchvar1,(array)$searchvar2,(array)$searchvar3);
                     } else {
                         if (strlen(utf8_decode($varKeyword)) == 12 ) {
                             # $search->getAll(solrPath,companiesSolrCore,'gemhNumber', $varKeyword,'',companiesUrl);    
                              # $search->getAll(solrPath,FRSolrCore,'gemhNumber', $varKeyword,'',companiesUrl);  
-                            $searchvar1 = $search->getAllCompaniesCouch(config('search.DbPath'), config('search.FRcouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'gemhnumber');  
-                            $searchvar2 = $search->getAllCompaniesCouch(config('search.DbPath'), config('search.companiescouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'gemhnumber'); 
+                            $searchvar1 = $search->getAllCompaniesCouch(config('search.DbPath'),config('search.lucenePath'), config('search.FRcouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'gemhnumber');  
+                            $searchvar2 = $search->getAllCompaniesCouch(config('search.DbPath'),config('search.lucenePath'), config('search.companiescouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'gemhnumber'); 
 
                             $searchvar = array_merge((array)$searchvar1,(array)$searchvar2);
                         } else {
@@ -193,17 +287,17 @@ class FormSearchController extends Controller
                 } else { //name
 
                      if (count($words) === 1){
-             $searchvar1 = $search->getAllCompaniesCouch(config('search.DbPath'), config('search.FRcouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term');  
-             $searchvar2 = $search->getAllCompaniesCouch(config('search.DbPath'), config('search.companiescouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term');  
-             $searchvar3 = $search->getAllCompaniesCouch(config('search.DbPath'), config('search.nonGemhcouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term');  
+             $searchvar1 = $search->getAllCompaniesCouch(config('search.DbPath'),config('search.lucenePath'), config('search.FRcouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term');  
+             $searchvar2 = $search->getAllCompaniesCouch(config('search.DbPath'),config('search.lucenePath'), config('search.companiescouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term');  
+             $searchvar3 = $search->getAllCompaniesCouch(config('search.DbPath'),config('search.lucenePath'), config('search.nonGemhcouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term');  
              
         }
         else {
             $termsArray = $newKeyWord->prepareExactKeyword($varKeyword);
             $exactFullKeyword = $termsArray[3];
             $searchvar1 = $search->getAllCompaniesCouch(config('search.DbPath'), config('search.FRcouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term');  
-            $searchvar2 = $search->getAllCompaniesCouch(config('search.DbPath'), config('search.companiescouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term');  
-            $searchvar3 = $search->getAllCompaniesCouch(config('search.DbPath'), config('search.nonGemhcouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term'); 
+            $searchvar2 = $search->getAllCompaniesCouch(config('search.DbPath'),config('search.lucenePath'), config('search.companiescouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term');  
+            $searchvar3 = $search->getAllCompaniesCouch(config('search.DbPath'),config('search.lucenePath'), config('search.nonGemhcouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term'); 
         }
 
 
@@ -236,72 +330,6 @@ class FormSearchController extends Controller
             }
         }      
 
-         return view('search.form')->with(compact('varKeyword', 'table_str', 'monthNum', 'monthName', 'dayName', 'dayMonthNum', 'lang', 'isdirector'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+         return view('search.form_test')->with(compact('varKeyword', 'table_str', 'monthNum', 'monthName', 'dayName', 'dayMonthNum', 'lang', 'isdirector'));
     }
 }

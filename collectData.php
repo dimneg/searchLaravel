@@ -19,13 +19,13 @@ class collectData {
        #
        #
  }
-   function getAllCompaniesCouch($DbPath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$companiesUrl,$term){
+   function getAllCompaniesCouch($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$companiesUrl,$term){
        global $Limit;
-       return $this->prepareResultsCouch($DbPath,$Db,$DesignDoc,$Index,$Wc,25,"score",$varKeyword,$couchUser,$couchPass,$companiesUrl,$term);
+       return $this->prepareResultsCouch($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,25,"score",$varKeyword,$couchUser,$couchPass,$companiesUrl,$term);
    }
-   function getAllPersonsCouch($DbPath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term){
+   function getAllPersonsCouch($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term){
        global $Limit;
-       return $this->prepareResultsCouchPersons($DbPath,$Db,$DesignDoc,$Index,$Wc,25,"score",$varKeyword,$couchUser,$couchPass,$Url,$term);
+       return $this->prepareResultsCouchPersons($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,25,"score",$varKeyword,$couchUser,$couchPass,$Url,$term);
    }
     
    function prepareResultsSolr($solrPath,$solrCore,$field,$varKeyword,$operand,$lbUrl){
@@ -79,10 +79,10 @@ class collectData {
         }
        
    } 
-   function prepareResultsCouch($DbPath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$lbUrl,$term) {
+   function prepareResultsCouch($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$lbUrl,$term) {
        $couchUserPwd = $couchUser.':'.$couchPass;
        $ch = curl_init();
-       $url=$DbPath.$Db."/_design/".$DesignDoc."/".$Index."?q=".$term.":".$varKeyword.$Wc."&limit:".$Limit."&sort:".$Sort;
+       $url = $DbPath.$lucenePath.$Db."/_design/".$DesignDoc."/".$Index."?q=".$term.":".$varKeyword.$Wc."&limit:".$Limit."&sort:".$Sort;
        #echo $url.PHP_EOL;
    
        curl_setopt($ch, CURLOPT_URL, $url);
@@ -128,12 +128,23 @@ class collectData {
                 }
                 
                 if (isset ($json['rows'])  ){ //rules to show or hide results
+                    if (isset($r['fields']['orgType'])){
+                        $orgtypeKey = str_replace('/', '_', $r['fields']['orgType']);
+                        $orgtypeKey = str_replace('/', '_',  $orgtypeKey);
+                        $orgtypeFront = $this->getOrgtypeDesc($DbPath, $Db, $couchUserPwd, $orgtypeKey);
+                    }
+                    else {
+                        $orgtypeFront = '';
+                    }
+                    
+                    
                     $newdata =  array (
                         'db' => $Db,
                         'name' => (isset($r['fields']['name'])) ? $r['fields']['name'] : null ,            
                         'vat' => $r['fields']['term'][0],
                         'gemhNumber' => (isset($r['fields']['gemhnumber'])) ?$r['fields']['gemhnumber'] : null , 
                         'orgType' => (isset($r['fields']['orgType'])) ?$r['fields']['orgType'] : null , 
+                        'orgTypeFront' => $orgtypeFront , 
                         'chamber' => (isset($r['fields']['chamber'])) ? $r['fields']['chamber'] : null ,  
                         'gemhDate' => (isset($r['fields']['gemhdate'])) ? $r['fields']['gemhdate'] : null ,  
                         'address'=>(isset($r['fields']['address']) ) ? $r['fields']['address'] : null ,
@@ -162,10 +173,10 @@ class collectData {
        return $Results;
    }
 
-   function prepareResultsCouchPersons($DbPath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$lbUrl,$term) {
+   function prepareResultsCouchPersons($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$lbUrl,$term) {
        $couchUserPwd = $couchUser.':'.$couchPass;
        $ch = curl_init();
-       $url=$DbPath.$Db."/_design/".$DesignDoc."/".$Index."?q=".$term.":".$varKeyword.$Wc."&limit:".$Limit."&sort:".$Sort;
+       $url = $DbPath.$Db."/_design/".$DesignDoc."/".$Index."?q=".$term.":".$varKeyword.$Wc."&limit:".$Limit."&sort:".$Sort;
        #echo $url.PHP_EOL;
        curl_setopt($ch, CURLOPT_URL, $url);
        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
@@ -940,5 +951,29 @@ class collectData {
         $string =  str_replace('Ό','Ο',$string);
         $string =  str_replace('Ώ','Ω',$string);
         return $string;
+   }
+   
+   function getOrgtypeDesc($DbPath,$Db,$couchUserPwd,$orgtypekey  ){
+       $ch = curl_init();
+       $url = $DbPath.$Db.$orgtypekey ;
+       curl_setopt($ch, CURLOPT_URL, $url);
+       curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+       curl_setopt($ch, CURLOPT_USERPWD, $couchUserPwd );
+       curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                       'Content-type: application/json; charset=utf-8',
+                       'Accept: */*'
+                    ));
+
+       $response = curl_exec($ch); 
+       curl_close($ch);
+       $json = json_decode($response,true);
+       if(isset ($json['orgtype_front'])) {
+           return $json['orgtype_front'];
+       }
+       else{ 
+           return '';
+       }
+       
    }
 }

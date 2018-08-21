@@ -1,9 +1,11 @@
 <?php
 
 return [    
-	'DbPath' => 'http://83.212.86.158:5984/_fti/local/',
+	#'DbPath' => 'http://83.212.86.158:5984/_fti/local/',
+        'DbPath' => 'http://83.212.86.158:5984/',
+        'lucenePath' =>'_fti/local/',
 	'couchUser' => 'dimneg',
-	'couchPass' => 'dim1978',	
+	'couchPass' => 'fujintua0)',	
 	'winLibraryServername_1' => '127.0.0.1:33067',
 	'winLibraryUsername_1' => 'root',
 	'winLibraryPassword_1' => "",
