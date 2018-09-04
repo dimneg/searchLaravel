@@ -13,7 +13,7 @@ namespace App;
  *
  * @author dimitris negkas
  */
-class showResults {
+class showResults2 {
     function presentResults($solrPath, $Results, $isdirector = null)
     { //test 090166291
         require_once 'collectData.php';
@@ -59,7 +59,7 @@ class showResults {
             $url = $uniqueResults[$i]['link'];
             # $corporation = $uniqueResults[$i]['corporate_id'];
            
-          
+            
             
           
            # echo 'amount:'.preg_replace('/\D/', '',$uniqueResults[$i]['tedSumofAmounts']).'class: '.$uniqueResults[$i]['amountClass'].'</br>';
@@ -75,13 +75,11 @@ class showResults {
 
                 //....basic view 1...\\
                 $table_str .= "<td style=\" text-align:left; border-left: 0px solid #ccc; font-size:15px; padding-right:0px;\">"; 
-                 if ($uniqueResults[$i]['db'] === 'lb_mp' || $uniqueResults[$i]['db'] === 'lb_mp_2'){
-                     //echo  $uniqueResults[$i]['name'];
-                     $table_str .= $uniqueResults[$i]['name'];
-                 }
-                 else {
-                      $table_str .= "<a class='nameLink' href='$url' target='_blank' >$name</a> ";
-                 }
+                
+                $table_str .='<font class="dataset" color="#FF0000" style="font-size: 0.77em">[Corporate Group]</font>';
+                $table_str .='<font class="dataset" color="#006621" style="font-size: 0.77em">High confidence</font>';
+                
+                
                	
                 $table_str .= ' ';
                 $scorePresentation = $this->presentConfidence($sumResults,$uniqueResults[$i]['score']);             
@@ -116,7 +114,7 @@ class showResults {
                 $table_str .= '</div>';
                 //....show diaugeia...\\
                
-                   
+                
                    
                 if ($uniqueResults[$i]['db'] === 'lb_fr' || $uniqueResults[$i]['db'] === 'lb_companies' ){
                     $table_str .= $this->hide_not_avail($uniqueResults[$i]['orgTypeFront']);
@@ -132,50 +130,15 @@ class showResults {
                          $table_str .= $this->hide_not_avail($uniqueResults[$i]['orgTypeFront']);	
                     }
                     else {
-                        if ($uniqueResults[$i]['db'] === 'lb_persons'){
-                            if ($uniqueResults[$i]['managementCnt']>0){
-                                $rest = $uniqueResults[$i]['managementCnt'] - 1;
-                                $restText='';
-                                if  ($rest > 0) {
-                                    $restText = ' και άλλες '.$rest;
-                                }
-                                #$mgmtCompanyLink= 'http://dashboard.linkedbusiness.gr/gr/company/'.$uniqueResults[$i]['s_mgmtCompanyLink'].'/basic?s=1';
-                                $mgmtCompanyLink= $basicUrl.'gr/company/'.$uniqueResults[$i]['s_mgmtCompanyLink'].'/basic?s=1';
-                                $mgmtCompanyName=$uniqueResults[$i]['s_mgmtCompanyName'];
-                               # echo 'Διαχειριστής: '.$this->hide_not_avail($uniqueResults[$i]['s_mgmtCompanyName']).$restText .'</br>';
-                                $table_str .= 'Διαχειριστής: ';
-                                $table_str .= "<a class='companyLink' href='  $mgmtCompanyLink' target='_blank' >$mgmtCompanyName</a> ";	
-                                $table_str .=  $restText. '</br>';
-                            }
-                             if ($uniqueResults[$i]['ownershipCnt']>0){
-                                 $ownCompanyLink= $basicUrl.'gr/company/'.$uniqueResults[$i]['s_ownCompanyLink'].'/basic?s=1';
-                                 $ownCompanyName=$uniqueResults[$i]['s_ownCompanyName'];
-                                 $rest = $uniqueResults[$i]['ownershipCnt'] - 1;
-                                 $restText ='';
-                                 if  ($rest > 0) {
-                                    $restText = ' και άλλες '.$rest;
-                                }
-                                 #echo 'Συμμετοχές: '.$this->hide_not_avail($uniqueResults[$i]['s_ownCompanyName']).$restText. '</br>';	
-                                $table_str .= 'Συμμετοχές: ';
-                                $table_str .= "<a class='companyLink' href='  $ownCompanyLink' target='_blank' >$ownCompanyName</a> ";
-                                $table_str .=  $restText. '</br>';
-                             }	
-                            
-                        }
-                        else {
-                            if ($uniqueResults[$i]['db'] === 'lb_mp' || $uniqueResults[$i]['db'] === 'lb_mp_2'){
-                                $mgmtCompanyLink= 'http://dashboard.linkedbusiness.gr/gr/company/'.$uniqueResults[$i]['s_mgmtCompanyLink'].'/basic?s=1';
-                                $mgmtCompanyName=$uniqueResults[$i]['s_mgmtCompanyName'];
-                                
-                                $table_str .= 'Διαχειριστής: ';
-                                $table_str .= "<a class='companyLink' href='  $mgmtCompanyLink' target='_blank' >$mgmtCompanyName</a> ";	
-                                $table_str .= '</br>';	
-                                 
-                                
-                            }
-                        }
+                        
                     }
                 }
+                
+                $table_str .=  ' <font class="dataset" color="#006621" style="font-size: 0.77em">ΔΙΑΥΓΕΙΑ</font></br> ';  
+                $table_str .= ' <font class="dataset" color="#006621" style="font-size: 0.77em">ΚΗΜΔΗΣ</font></br> '; 
+                $table_str .=  ' <font class="dataset" color="#006621" style="font-size: 0.77em">Επιδοτήσεις ΕΣΠΑ</font></br> ';
+                $table_str .=  ' <font class="dataset" color="#006621" style="font-size: 0.77em">ΑΥΣΤΡΑΛΙΑ</font></br> '; 
+                $table_str .=  ' <font class="dataset" color="#006621" style="font-size: 0.77em">T.E.D.</font></br> '; 
                 
                # echo ' <font class="dataset" color="#800080" style="font-size: 0.77em">Γ.Ε.Μ.Η.</font></br> '; 
                 

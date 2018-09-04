@@ -2,8 +2,8 @@
 
 return [    
 	#'DbPath' => 'http://83.212.86.158:5984/_fti/local/',
-        'DbPath' => 'http://83.212.86.158:5984/',
-        'lucenePath' =>'_fti/local/',
+       'DbPath' => 'http://83.212.86.158:5984/',
+       'lucenePath' =>'_fti/local/',
 	'couchUser' => 'dimneg',
 	'couchPass' => 'fujintua0)',	
 	'winLibraryServername_1' => '127.0.0.1:33067',
@@ -24,6 +24,13 @@ return [
 	'companiescouchDB' => 'lb_companies',
 	'nonGemhcouchDB' => 'lb_no_gemh',
 	'personscouchDB' => 'lb_persons',
+        'orgtypescouchDB' =>'lb_orgtypes',
+        'tedcouchDB' =>'ted_sellers_2018',
+	'australiaSellersCouchDB'=>'elod_australia_sellers',
+	'australiaBuyersCouchDB'=>'elod_australia_buyers',
+        'diaugeiaSellersCouchDB'=>'elod_diaugeia_sellers',
+	'diaugeiaBuyersCouchDB'=>'elod_diaugeia_buyers',
+        'espaCouchDB'=>'elod_espa_beneficiaries',
 	'sparqlServer' => 'http://143.233.226.49:8890',
 	'personsUrl' => 'http://dashboard.linkedbusiness.gr/gr/person/',
 	'companiesUrl' => 'http://dashboard.linkedbusiness.gr/gr/company/'
