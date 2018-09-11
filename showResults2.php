@@ -14,7 +14,295 @@ namespace App;
  * @author dimitris negkas
  */
 class showResults2 {
-    function presentResults($solrPath, $Results, $isdirector = null)
+    function presentResults($solrPath, $Results, $isdirector )
+    { //test 090166291
+        require_once 'collectData.php';
+        //global $Results;
+        #print_r($Results);
+        #$this->saveCsvCloud($Results, '/var/log/results.csv');
+       
+        #$source = ' ';
+        $basicUrl = $this->getBasicUrl();
+        $i = 0;
+        $uniqueResults = array_filter($Results); //let 's see if there is need to group
+        //print_r($uniqueResults);
+        $sumResults = count($uniqueResults);
+        #echo "results number:".$sumResults.PHP_EOL; 
+        $sumSpend = 0;
+        $sumAward = 0;
+        $sumContracts = 0;
+        $sumPayments = 0;
+        $counterContracts = 0;
+        $sumAwardSel = 0;
+        $sumSpendSel = 0;
+        $table_str = "";
+       
+        
+        //$table_str = "<table id='searchResults' class='display'><thead><tr><th></th><th></th> </tr></thead>";  
+        //if ($isdirector == 1) {
+        //    $table_str = "<table id='searchResults2' class='display'><thead><tr><th></th></tr></thead>"; 
+        //} else {
+            $table_str = "<table id='searchResults' class='display'><thead><tr><th></th><th></th></tr></thead>"; 
+        //}
+
+
+        $table_str .= "<tbody>";
+        
+        //corporation
+        
+     
+        if ($isdirector == 1){ //corporations
+            while ($i < $sumResults) { 
+              
+            
+                $name = $this->unaccent(mb_convert_case($uniqueResults[$i]['name'],MB_CASE_UPPER, "UTF-8"));
+                $url = $uniqueResults[$i]['link'];
+                $corporation_id = $uniqueResults[$i]['corporation_id'];
+                $country_code = $uniqueResults[$i]['country_code'];
+                $flag_path ='/images/flags/32/'.  strtolower( $country_code).'.png';
+            # $corporation = $uniqueResults[$i]['corporate_id'];
+           
+            
+            
+          
+          
+            
+                if  (isset($uniqueResults[$i]['vat'])  ) {    
+
+                    if  (!is_numeric($uniqueResults[$i]['vat'])) { //boost step 2
+                        $uniqueResults[$i]['score'] = bcmul(0.75,$uniqueResults[$i]['score'] ,4) ;
+                    }
+
+
+                    $table_str .= "<tr>";
+
+                    //....basic view 1...\\
+                    $table_str .= "<td style=\" text-align:left; border-left: 0px solid #ccc; font-size:15px; padding-right:0px;\">"; 
+
+                    $table_str .="<span style='background-color: #800080; color:white'>corporate group: $corporation_id</span>";
+
+                    $table_str .= ' ';
+                    $table_str .= $uniqueResults[$i]['name'];
+
+                   
+
+
+                    $table_str .= ' ';
+                    $scorePresentation = $this->presentConfidence($sumResults,$uniqueResults[$i]['score']);             
+                    $table_str .= " <span style='font-size: 0.77em; color:$scorePresentation[1]'>$scorePresentation[0]</span>";
+                    //....alt names...\\
+                    #if ($uniqueResults[$i]['corporate_id'] !==''){
+                      #  echo " <font class='dataset' color='#006621' style='font-size: 0.77em'>$corporation</font></br> ";
+                    #}
+                    #if (!empty($uniqueResults[$i]['altNames'])) {
+                     #    echo 'Eμφανίζεται και ως: '.$uniqueResults[$i]['altNames']."</br>";
+
+                    #}
+                     //....basic view 2...\\
+                    
+                    $table_str .= '<br>';
+                    $table_str .="<img src=$flag_path alt=$country_code height='32' width='32'>"; 
+                    $table_str .= '<br>';
+                    $table_str .= $this->hide_not_avail($uniqueResults[$i]['industry']);
+
+                    $table_str .= '<div class="info">';                
+                    $table_str .= $this->hide_not_avail($uniqueResults[$i]['address']);
+                    $table_str .= ' ';
+                    $table_str .= $this->hide_not_avail($uniqueResults[$i]['pc']);
+                    $table_str .= ' ';
+                    $table_str .= $this->hide_not_avail_space($uniqueResults[$i]['city']); 
+                    $table_str .= ' ';
+                  
+                     
+
+                    $table_str .= '</div>';
+                    //....show diaugeia...\\
+
+
+
+                    
+
+
+
+
+
+
+                   # echo ' <font class="dataset" color="#800080" style="font-size: 0.77em">Γ.Ε.Μ.Η.</font></br> '; 
+
+
+
+                    #echo 'score :'.$uniqueResults[$i]['score']; 
+                    #echo 'class: '.$uniqueResults[$i]['amountClass']; 
+
+
+
+                    $table_str .= "</td>";
+
+                    $table_str .= "<td style=\" text-align:left; border-left: 0px solid #ccc; font-size:15px; padding-right:0px;  width:80px;\">";
+                    $table_str .= $uniqueResults[$i]['score']; //hidden
+                    $table_str .= "</td>";
+
+
+
+                    $table_str .= "</tr>"; 
+                    }
+                $i++;
+                }
+          
+        }
+        else {
+             while ($i < $sumResults) { 
+            
+                $name = $this->unaccent(mb_convert_case($uniqueResults[$i]['name'],MB_CASE_UPPER, "UTF-8"));
+                $url = $uniqueResults[$i]['link'];
+                $corporation_id = $uniqueResults[$i]['corporation_id']; 
+                $country_code = $uniqueResults[$i]['country_code'];
+                $flag_path ='/images/flags/32/'.  strtolower( $country_code).'.png';
+                # $corporation = $uniqueResults[$i]['corporate_id'];
+           
+            
+            
+          
+           # echo 'amount:'.preg_replace('/\D/', '',$uniqueResults[$i]['tedSumofAmounts']).'class: '.$uniqueResults[$i]['amountClass'].'</br>';
+            
+            if  (isset($uniqueResults[$i]['vat']) ||  ($uniqueResults[$i]['db'] === 'lb_mp' || $uniqueResults[$i]['db'] === 'lb_mp_2') ) {    
+                
+                if  (!is_numeric($uniqueResults[$i]['vat'])) { //boost step 2
+                    $uniqueResults[$i]['score'] = bcmul(0.75,$uniqueResults[$i]['score'] ,4) ;
+                }
+                
+            
+                $table_str .= "<tr>";
+
+                //....basic view 1...\\
+                $table_str .= "<td style=\" text-align:left; border-left: 0px solid #ccc; font-size:15px; padding-right:0px;\">"; 
+                
+                if  ( isset($uniqueResults[$i]['corporation_id']) && $uniqueResults[$i]['corporation_id']!=''){
+                   # $table_str .= "group: ".$uniqueResults[$i]['corporation_id']; 
+                    $table_str .="<span style='background-color: #800080; color:white'>group: $corporation_id</span>";
+                    #$table_str .= "group: ";
+                }
+              
+                $table_str .= ' ';
+                $table_str .= $uniqueResults[$i]['name'];
+                
+                #$table_str .='<font class="dataset" color="#FF0000" style="font-size: 0.77em">[Corporate Group]</font>';
+                #$table_str .='<font class="dataset" color="#006621" style="font-size: 0.77em">High confidence</font>';
+                
+                
+               	
+                $table_str .= ' ';
+                $scorePresentation = $this->presentConfidence($sumResults,$uniqueResults[$i]['score']);             
+                $table_str .= " <span style='font-size: 0.77em; color:$scorePresentation[1]'>$scorePresentation[0]</span>";
+                //....alt names...\\
+                #if ($uniqueResults[$i]['corporate_id'] !==''){
+                  #  echo " <font class='dataset' color='#006621' style='font-size: 0.77em'>$corporation</font></br> ";
+                #}
+                #if (!empty($uniqueResults[$i]['altNames'])) {
+                 #    echo 'Eμφανίζεται και ως: '.$uniqueResults[$i]['altNames']."</br>";
+                     
+                #}
+                 //....basic view 2...\\
+                $table_str .= '<br>';
+                $table_str .= '<div class="info">';    
+                $table_str .="<img src=$flag_path alt=$country_code height='32' width='32'>";        
+                $table_str .='&nbsp';
+                     
+                $table_str .= $this->hide_not_avail($uniqueResults[$i]['address']);
+                $table_str .= ' ';
+                $table_str .= $this->hide_not_avail($uniqueResults[$i]['pc']);
+                $table_str .= ' ';
+                $table_str .= $this->hide_not_avail_space($uniqueResults[$i]['city']); 
+                $table_str .= ' ';
+                //echo $this->hide_not_avail($uniqueResults[$i]['locality']); 
+                //echo ' ';
+               # echo $this->hide_not_avail_space($uniqueResults[$i]['countryName']); 
+                #echo ' ';
+                 if ($uniqueResults[$i]['db'] === 'lb_mp' || $uniqueResults[$i]['db'] === 'lb_mp_2') {
+                     $table_str .= "</br>";
+                 }
+                 else {
+                     $table_str .= $this->getVatLabel($uniqueResults[$i]['vat']). $this->hide_not_avail($uniqueResults[$i]['vat']."</br>");
+                 }
+                
+                $table_str .= '</div>';
+                //....show diaugeia...\\
+               
+                
+                   
+                if ($uniqueResults[$i]['db'] === 'lb_fr' || $uniqueResults[$i]['db'] === 'lb_companies' ){
+                    $table_str .= $this->hide_not_avail($uniqueResults[$i]['orgTypeFront']);
+                    $table_str .= '&nbsp';	
+                    $table_str .= $this->hide_not_avail($uniqueResults[$i]['cpaTitle']);
+                    $table_str .= '&nbsp';
+                    $table_str .= 'Γ.Ε.Μ.Η.: '.$this->hide_not_avail($uniqueResults[$i]['gemhNumber']);	
+                    $table_str .= ' &nbsp'.$this->hide_not_avail($uniqueResults[$i]['chamber']);
+                    $table_str .=  ' &nbsp [Ημ/νία απόδοσης Γ.Ε.Μ.Η.: '.  $this->convertDate($uniqueResults[$i]['gemhDate']).']</br>';	
+                }
+                else {
+                    if ($uniqueResults[$i]['db'] === 'lb_no_gemh'){
+                         $table_str .= $this->hide_not_avail($uniqueResults[$i]['orgTypeFront']);	
+                    }
+                    else {
+                        
+                    }
+                }
+                if ($uniqueResults[$i]['db'] == 'elod_diaugeia_buyers' || $uniqueResults[$i]['db'] == 'elod_diaugeia_sellers'  ){
+                    $table_str .=  ' <font class="dataset" color="#006621" style="font-size: 0.77em">ΔΙΑΥΓΕΙΑ</font></br> ';  
+                }
+                
+                if ($uniqueResults[$i]['db'] == 'elod_buyers' || $uniqueResults[$i]['db'] == 'elod_sellers'  ){
+                   $table_str .= ' <font class="dataset" color="#006621" style="font-size: 0.77em">ΚΗΜΔΗΣ</font></br> ';
+                }
+                
+                if ( $uniqueResults[$i]['db'] == 'elod_espa_beneficiaries'  ){
+                   $table_str .=  ' <font class="dataset" color="#006621" style="font-size: 0.77em">Επιδοτήσεις ΕΣΠΑ</font></br> ';
+                }
+                
+                if ( $uniqueResults[$i]['db'] == 'elod_australia_buyers' || $uniqueResults[$i]['db'] == 'elod_australia_sellers' ){
+                  $table_str .=  ' <font class="dataset" color="#006621" style="font-size: 0.77em">ΑΥΣΤΡΑΛΙΑ</font></br> '; 
+                }
+                
+                if ( $uniqueResults[$i]['db'] == 'ted_sellers_2018_v2' || $uniqueResults[$i]['db'] == 'yds_big_sellers' ){
+                  $table_str .=  ' <font class="dataset" color="#006621" style="font-size: 0.77em">T.E.D.</font></br> '; 
+                }
+                
+                 
+                
+                
+                
+                
+               # echo ' <font class="dataset" color="#800080" style="font-size: 0.77em">Γ.Ε.Μ.Η.</font></br> '; 
+                
+                
+               
+                #echo 'score :'.$uniqueResults[$i]['score']; 
+                #echo 'class: '.$uniqueResults[$i]['amountClass']; 
+                
+                
+                 
+                $table_str .= "</td>";
+
+                $table_str .= "<td style=\" text-align:left; border-left: 0px solid #ccc; font-size:15px; padding-right:0px;  width:80px;\">";
+                $table_str .= $uniqueResults[$i]['score']; //hidden
+                $table_str .= "</td>";
+                   
+                
+
+                $table_str .= "</tr>"; 
+                }
+            $i++;
+         }
+        }
+        
+       
+         
+        $table_str .= "</tbody>";
+        $table_str .= "</table>";
+            
+        return $table_str;
+    }
+     function presentResultsCorporation($solrPath, $Results, $isdirector = null)
     { //test 090166291
         require_once 'collectData.php';
         //global $Results;
@@ -57,6 +345,9 @@ class showResults2 {
             
             $name = $this->unaccent(mb_convert_case($uniqueResults[$i]['name'],MB_CASE_UPPER, "UTF-8"));
             $url = $uniqueResults[$i]['link'];
+            $corporation_id = $uniqueResults[$i]['corporation_id'];
+            $country_code = $uniqueResults[$i]['country_code'];
+            $flag_path ='/images/flags/32/'.  strtolower( $country_code).'.png';
             # $corporation = $uniqueResults[$i]['corporate_id'];
            
             
@@ -76,8 +367,17 @@ class showResults2 {
                 //....basic view 1...\\
                 $table_str .= "<td style=\" text-align:left; border-left: 0px solid #ccc; font-size:15px; padding-right:0px;\">"; 
                 
-                $table_str .='<font class="dataset" color="#FF0000" style="font-size: 0.77em">[Corporate Group]</font>';
-                $table_str .='<font class="dataset" color="#006621" style="font-size: 0.77em">High confidence</font>';
+                if  ( isset($uniqueResults[$i]['corporation_id']) && $uniqueResults[$i]['corporation_id']!=''){
+                   # $table_str .= "group: ".$uniqueResults[$i]['corporation_id']; 
+                    $table_str .="<span style='background-color: #800080; color:white'>group: $corporation_id</span>";
+                    #$table_str .= "group: ";
+                }
+              
+                $table_str .= ' ';
+                $table_str .= $uniqueResults[$i]['name'];
+                
+                #$table_str .='<font class="dataset" color="#FF0000" style="font-size: 0.77em">[Corporate Group]</font>';
+                #$table_str .='<font class="dataset" color="#006621" style="font-size: 0.77em">High confidence</font>';
                 
                 
                	
@@ -93,7 +393,10 @@ class showResults2 {
                      
                 #}
                  //....basic view 2...\\
-                $table_str .= '<div class="info">';
+                $table_str .= '<br>';
+                $table_str .="<img src=$flag_path alt=$country_code height='32' width='32'>"; 
+                
+                $table_str .= '<div class="info">';                
                 $table_str .= $this->hide_not_avail($uniqueResults[$i]['address']);
                 $table_str .= ' ';
                 $table_str .= $this->hide_not_avail($uniqueResults[$i]['pc']);
@@ -133,12 +436,30 @@ class showResults2 {
                         
                     }
                 }
+                if ($uniqueResults[$i]['db'] == 'elod_diaugeia_buyers' || $uniqueResults[$i]['db'] == 'elod_diaugeia_sellers'  ){
+                    $table_str .=  ' <font class="dataset" color="#006621" style="font-size: 0.77em">ΔΙΑΥΓΕΙΑ</font></br> ';  
+                }
                 
-                $table_str .=  ' <font class="dataset" color="#006621" style="font-size: 0.77em">ΔΙΑΥΓΕΙΑ</font></br> ';  
-                $table_str .= ' <font class="dataset" color="#006621" style="font-size: 0.77em">ΚΗΜΔΗΣ</font></br> '; 
-                $table_str .=  ' <font class="dataset" color="#006621" style="font-size: 0.77em">Επιδοτήσεις ΕΣΠΑ</font></br> ';
-                $table_str .=  ' <font class="dataset" color="#006621" style="font-size: 0.77em">ΑΥΣΤΡΑΛΙΑ</font></br> '; 
-                $table_str .=  ' <font class="dataset" color="#006621" style="font-size: 0.77em">T.E.D.</font></br> '; 
+                if ($uniqueResults[$i]['db'] == 'elod_buyers' || $uniqueResults[$i]['db'] == 'elod_sellers'  ){
+                   $table_str .= ' <font class="dataset" color="#006621" style="font-size: 0.77em">ΚΗΜΔΗΣ</font></br> ';
+                }
+                
+                if ( $uniqueResults[$i]['db'] == 'elod_espa_beneficiaries'  ){
+                   $table_str .=  ' <font class="dataset" color="#006621" style="font-size: 0.77em">Επιδοτήσεις ΕΣΠΑ</font></br> ';
+                }
+                
+                if ( $uniqueResults[$i]['db'] == 'elod_australia_buyers' || $uniqueResults[$i]['db'] == 'elod_australia_sellers' ){
+                  $table_str .=  ' <font class="dataset" color="#006621" style="font-size: 0.77em">ΑΥΣΤΡΑΛΙΑ</font></br> '; 
+                }
+                
+                if ( $uniqueResults[$i]['db'] == 'ted_sellers_2018_v2' || $uniqueResults[$i]['db'] == 'yds_big_sellers' ){
+                  $table_str .=  ' <font class="dataset" color="#006621" style="font-size: 0.77em">T.E.D.</font></br> '; 
+                }
+                
+                 
+                
+                
+                
                 
                # echo ' <font class="dataset" color="#800080" style="font-size: 0.77em">Γ.Ε.Μ.Η.</font></br> '; 
                 
@@ -167,7 +488,6 @@ class showResults2 {
             
         return $table_str;
     }
-    
     function fromTextToNumber($text) {
         $numbered=0;
         if ((strpos($text,'M') !== false) || (strpos($text,'Μ') !== false)) {

@@ -20,10 +20,10 @@
 									
 									@if ($isdirector == 1) 
 										<li><a id="tab1" class="left" href="#1a" data-toggle="tab">Επιχειρήσεις</a></li>
-										<li><a id="tab2" class="right active" href="#2a" data-toggle="tab">Corporations</a></li>
+										<li><a id="tab2" class="right active" href="#2a" data-toggle="tab">Corporate Groups</a></li>
 									@else
 										<li><a id="tab1" class="left active" href="#1a" data-toggle="tab">Επιχειρήσεις</a></li>
-										<li><a id="tab2" class="right" href="#2a" data-toggle="tab">Corporations</a></li>
+										<li><a id="tab2" class="right" href="#2a" data-toggle="tab">Corporate Groups</a></li>
 									@endif
 								</ul>
 

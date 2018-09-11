@@ -28,9 +28,13 @@ class collectData {
        return $this->prepareResultsCouchPersons($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,25,"score",$varKeyword,$couchUser,$couchPass,$Url,$term);
    }
    
-   function getAllCompaniesCouchOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term){
+   function getAllCompaniesCouchOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term,$orgtypescouchDB){
        global $Limit;
-       return $this->prepareResultsCouchOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term);       		  
+       return $this->prepareResultsCouchOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term,$orgtypescouchDB);       		  
+   }
+   function getAllCorporationsCouchOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term,$orgtypescouchDB){
+       global $Limit;
+       return $this->prepareResultsCouchCorporationsOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term,$orgtypescouchDB);       		  
    }
 
    function prepareResultsCouch($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$lbUrl,$term, $orgtypescouchDB) {
@@ -131,8 +135,8 @@ class collectData {
    function prepareResultsCouchPersons($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$lbUrl,$term) {
        $couchUserPwd = $couchUser.':'.$couchPass;
        $ch = curl_init();
-       $url = $DbPath.$Db."/_design/".$DesignDoc."/".$Index."?q=".$term.":".$varKeyword.$Wc."&limit:".$Limit."&sort:".$Sort;
-       #echo $url.PHP_EOL;
+       $url = $DbPath.$lucenePath.$Db."/_design/".$DesignDoc."/".$Index."?q=".$term.":".$varKeyword.$Wc."&limit:".$Limit."&sort:".$Sort;
+       echo $url.PHP_EOL;
        curl_setopt($ch, CURLOPT_URL, $url);
        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -233,7 +237,112 @@ class collectData {
    
 
     
-   function prepareResultsCouchOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$lbUrl,$term){
+   function prepareResultsCouchOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$lbUrl,$term,$orgtypescouchDB){
+       $couchUserPwd = $couchUser.':'.$couchPass;
+       $ch = curl_init();
+       $url = $DbPath.$lucenePath.$Db."/_design/".$DesignDoc."/".$Index."?q=".$term.":".$varKeyword.$Wc."&limit:".$Limit."&sort:".$Sort;
+       echo $url.PHP_EOL;
+   
+       curl_setopt($ch, CURLOPT_URL, $url);
+       curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+       curl_setopt($ch, CURLOPT_USERPWD, $couchUserPwd );
+       curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                       'Content-type: application/json; charset=utf-8',
+                       'Accept: */*'
+                    ));
+
+       $response = curl_exec($ch); 
+
+
+     
+       curl_close($ch);
+ 
+       $Results = array();
+       //global $Results;
+       //config('search.Results');
+       global $Lang;
+       
+       $json = json_decode($response,true);
+       
+       if(isset ($json['rows'])) {
+           foreach($json['rows'] as $r){     
+               global $Boost;
+                $Boost = 1.2;
+                    switch ($Wc) { //boost step 1
+                    case "";{	            
+                       $r['score'] *=$Boost;
+                       break; 
+                    }
+                    case "*"; {
+                       $r['score'] *=1;
+                        break; 
+
+                    }
+                    case "~0.75"; {
+                       $r['score'] *=1;
+                       break; 
+                    }
+                }
+                
+                if (isset ($json['rows'])  ){ //rules to show or hide results
+                    if (isset($r['fields']['orgType'])){
+                        $orgtypeKey = str_replace('/', '_', $r['fields']['orgType']);
+                        $orgtypeKey = str_replace('/', '_',  $orgtypeKey);
+                        $orgtypeFront = $this->getOrgtypeDesc($DbPath, $orgtypescouchDB, $couchUserPwd, $orgtypeKey);
+                    }
+                    else {
+                        $orgtypeFront = '';
+                    }
+                    
+                    $corporation_id = (isset($r['fields']['corporation_id'])) ? $r['fields']['corporation_id'] : null; 
+                    
+                    $country_code = (isset($r['fields']['country_code'])) ? $r['fields']['country_code'] : null ; 
+                    
+                    $newdata =  array (
+                        'db' => $Db,
+                        'name' => (isset($r['fields']['term'][1])) ? $r['fields']['term'][1] : null ,            
+                        'vat' => $r['fields']['term'][0],
+                        'gemhNumber' => (isset($r['fields']['gemhnumber'])) ?$r['fields']['gemhnumber'] : null , 
+                        'cpaTitle' => (isset($r['fields']['cpaTitle'])) ?$r['fields']['cpaTitle'] : null , 
+                        'orgType' => (isset($r['fields']['orgType'])) ?$r['fields']['orgType'] : null , 
+                        'orgTypeFront' => $orgtypeFront , 
+                        'chamber' => (isset($r['fields']['chamber'])) ? $r['fields']['chamber'] : null ,  
+                        'gemhDate' => (isset($r['fields']['gemhdate'])) ? $r['fields']['gemhdate'] : null ,  
+                        'address'=>(isset($r['fields']['address']) ) ? $r['fields']['address'] : null ,
+                        'pc'=>(isset($r['fields']['pc']) ) ? $r['fields']['pc'] : null ,   
+                        'city'=>(isset($r['fields']['city']) ) ? $r['fields']['city'] : null ,
+                        'link' =>    (isset($r['fields']['link']) ) ? $r['fields']['link'] : null ,
+                        'score' =>  $r['score'],
+                        'id' => $r['id'],
+                        'corporation_id' => $corporation_id,
+                        'country_code' => $this->defineCountry($Db, $country_code),
+                        
+                       #'dataDiaugeia'=>  $this->defineSource($Db, 'dataDiaugeia',0),
+                       #'dataKhmdhs'=>  $this->defineSource($Db, 'dataKhmdhs',0),
+                       #'dataEspa'=> $this->defineSource($Db, 'dataEspa',0),
+                       #'dataTed'=>  $this->defineSource($Db, 'dataTed',0),
+                       #'dataGemh'=>  $this->defineSource($Db, 'dataGemh',0),
+                       #'dataAustralia'=>$this->defineSource($Db, 'dataAustralia',0),
+                    );
+                   
+                }
+                $arrayElements = count($Results);
+                if  ($arrayElements <= 1000 && isset($newdata)){
+                      $key = $this->searchForId($newdata['vat'], $Results,'vat');
+                      if ($key === NULL){
+
+                          $Results[] = $newdata;      //insert whole record                              
+                          //Config::set('session.driver', $Results);
+                      }
+                      
+                  }
+               
+           }
+       }
+       return $Results;
+   }
+   function prepareResultsCouchCorporationsOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$lbUrl,$term,$orgtypescouchDB){
        $couchUserPwd = $couchUser.':'.$couchPass;
        $ch = curl_init();
        $url = $DbPath.$lucenePath.$Db."/_design/".$DesignDoc."/".$Index."?q=".$term.":".$varKeyword.$Wc."&limit:".$Limit."&sort:".$Sort;
@@ -291,6 +400,9 @@ class collectData {
                         $orgtypeFront = '';
                     }
                     
+                    $corporation_id = (isset($r['fields']['corporation_id'])) ? $r['fields']['corporation_id'] : '00' ; 
+                    
+                    $country_code = (isset($r['fields']['country_code'])) ? $r['fields']['country_code'] : null ; 
                     
                     $newdata =  array (
                         'db' => $Db,
@@ -307,7 +419,17 @@ class collectData {
                         'city'=>(isset($r['fields']['city']) ) ? $r['fields']['city'] : null ,
                         'link' =>    (isset($r['fields']['link']) ) ? $r['fields']['link'] : null ,
                         'score' =>  $r['score'],
-                        'id' => $r['id']
+                        'id' => $r['id'],
+                        'corporation_id' =>  $corporation_id ,
+                        'country_code' => $this->defineCountry($Db, $country_code),
+                        'industry' =>(isset($r['fields']['industry']) ) ? $r['fields']['industry'] : null ,
+                        
+                       #'dataDiaugeia'=>  $this->defineSource($Db, 'dataDiaugeia',0),
+                       #'dataKhmdhs'=>  $this->defineSource($Db, 'dataKhmdhs',0),
+                       #'dataEspa'=> $this->defineSource($Db, 'dataEspa',0),
+                       #'dataTed'=>  $this->defineSource($Db, 'dataTed',0),
+                       #'dataGemh'=>  $this->defineSource($Db, 'dataGemh',0),
+                       #'dataAustralia'=>$this->defineSource($Db, 'dataAustralia',0),
                     );
                    
                 }
@@ -465,7 +587,7 @@ class collectData {
        #return $json;
        
    } 
-   function getCorporationSolr($solrPath,$solrCore,$vat){
+   function getCorporationCouch($solrPath,$solrCore,$vat){
        $return = 0;
        $ch = curl_init();
        $url = $solrPath.$solrCore."/select?indent=on&q=db_id:".$vat."&wt=json";
@@ -474,7 +596,7 @@ class collectData {
        curl_setopt($ch, CURLOPT_URL, $url);
        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-       curl_setopt($ch, CURLOPT_USERPWD, 'dimneg:dim1978');			
+       curl_setopt($ch, CURLOPT_USERPWD, '');			
        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
         'Content-type: application/json; charset=utf-8',
 	'Accept: */*'
@@ -538,6 +660,9 @@ class collectData {
        }
                
    }
+   
+   
+   
    
  
    function getTedDataRDF($vat,$sparqlServer){
@@ -620,7 +745,7 @@ class collectData {
        return $word;
    }
    
-   function defineCountry($db){
+   function defineCountry($db,$country_code){
        switch ($db) {
            case 'elod_diaugeia_buyers':
                $country = 'GR';
@@ -648,12 +773,22 @@ class collectData {
                break;
            case 'elod_australia_sellers':
                $country = 'AU';
+               break;           
+           case 'lb_companies':
+               $country = 'GR';
                break;
-           case 'yds_big_sellers':
-               $country = 'TED';
+           case 'lb_fr':
+               $country = 'GR';
                break;
+           case 'lb_no_gemh':
+               $country = 'GR';
+               break;
+           #case 'yds_corporation_companies_v2':
+            #   $country = $country_code;
+            #   break;
 
            default:
+               $country = $country_code;
                break;
        }
        return $country;
