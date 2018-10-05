@@ -25,6 +25,7 @@ return [
 	'nonGemhcouchDB' => 'lb_no_gemh',
 	'personscouchDB' => 'lb_persons',
         'orgtypescouchDB' =>'lb_orgtypes',
+        'chamberscouchDB' =>'lb_chambers',
         'tedcouchDB' =>'yds_corporation_companies_v2',
 	'australiaSellersCouchDB'=>'elod_australia_sellers',
 	'australiaBuyersCouchDB'=>'elod_australia_buyers',
@@ -36,5 +37,6 @@ return [
         'espaCouchDB'=>'elod_espa_beneficiaries',
 	'sparqlServer' => 'http://143.233.226.49:8890',
 	'personsUrl' => 'http://dashboard.linkedbusiness.gr/gr/person/',
-	'companiesUrl' => 'http://dashboard.linkedbusiness.gr/gr/company/'
+	'companiesUrl' => 'http://dashboard.linkedbusiness.gr/gr/company/',
+        'corporationsUrl' => '/corporate/'
 ];
