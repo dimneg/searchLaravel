@@ -34,7 +34,7 @@
 										<div class="tab-pane active" id="1a">											
 									@endif
 										<div class="search">
-											<form method="post" action="{{ route('home') }}/en/advancedsearchtest" id="searchFormCompanies">
+											<form method="post" action="{{ route('home') }}/{{ $lang }}/advancedsearchtest" id="searchFormCompanies">
 												<input name="_token" type="hidden" value="{{ csrf_token() }}">
 												<div style="margin:20px 0px; display:inline-block; width:100%;">
 													<input type="text" id="searchKey" name="searchKey" value="{{ $varKeyword }}" class="searchText" placeholder="Αναζήτηση με ΑΦΜ & επωνυμία σε 1.340.567 επιχειρήσεις">
