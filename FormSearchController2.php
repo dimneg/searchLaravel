@@ -177,6 +177,8 @@ class FormSearchController2 extends Controller
         $Limit = 25;
         $Sort = 'score';
         $Wc = '';
+        $Wc_wild = '*';
+        $Wc_fuzzy = '~0.80';
         $calls = 0;
         $Results = [[]];
         $AlreadyFound = 0;
@@ -213,7 +215,7 @@ class FormSearchController2 extends Controller
                 
                 if (is_numeric($varKeyword)) { //probaby afm
 //echo "1";                    
-                    $searchvar1 = $search->getAllPersonsCouch(config('search.DbPath'),config('search.lucenePath'), config('search.personscouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'), config('search.companiesUrl'),'vat');  
+                    $searchvar1=$search->getAllCorporationsCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.corporationsCouchDB'), 'VatIdOrName', 'VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'), config('search.companiesUrl'),'term',config('search.orgtypescouchDB'));    
                     $searchvar2 = NULL;     
 
                 }
@@ -246,13 +248,13 @@ class FormSearchController2 extends Controller
                 
                 //$resultsPresentation -> presentResults(config('search.solrPath'));
 
-                $table_str = $resultsPresentation->presentResults(config('search.solrPath'), $searchvar, $isdirector);
+                $table_str = $resultsPresentation->presentResults(config('search.solrPath'), $searchvar, $isdirector,$lang,'','');
                 
                 
                 $time_post = microtime(true);
                 $exec_time = $time_post - $time_pre;
                 $table_str .=  "<div ALIGN='CENTER'>";
-                $table_str .= '(Σε '.number_format($exec_time,2).' δευτερόλεπτα)' ;
+                $table_str .= __('lang.advancedSearchResults_frm_time1').' '.number_format($exec_time,2).' '.__('lang.advancedSearchResults_frm_time2');
                 $table_str .= "</div>";
                
                 $varKeyword =  str_replace('+',' ',$varKeyword);
@@ -264,23 +266,42 @@ class FormSearchController2 extends Controller
                 if (is_numeric($varKeyword)) { //probaby afm
                     if (strlen(utf8_decode($varKeyword)) ==9 ) {
                         
-                            $searchvar1 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.nonGemhcouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'vat',config('search.orgtypescouchDB'));    
-                            $searchvar2 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.companiescouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'vat',config('search.orgtypescouchDB'));  
-                            $searchvar3 =NULL;                            
-                            #$searchvar3 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.nonGemhcouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'vat',config('search.orgtypescouchDB')); 
-                            #$search->getAllCompaniesCouch(DbPath, nonGemhcouchDB , $DesignDoc, $Index, $Wc, $Limit, $Sort, $varKeyword, $couchUser, $couchPass,companiesUrl);
-                            $searchvar = array_merge((array)$searchvar1,(array)$searchvar2);
+                            $searchvar1 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.nonGemhcouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'vat',config('search.orgtypescouchDB'),config('search.chamberscouchDB'));    
+                            $searchvar2 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.companiescouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'vat',config('search.orgtypescouchDB'),config('search.chamberscouchDB'));  
+                            $searchvar3 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.tedcouchDB') , 'VatIdOrName', 'VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','','');                           
+                            $searchvar4 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.FRcouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'vat',config('search.orgtypescouchDB'),config('search.chamberscouchDB')); 
+                            $searchvar5 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.diaugeiaSellersCouchDB'), 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','',''); 
+                            $searchvar6 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.khmdhsSellersCouchDB'), 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','',''); 
+                            $searchvar7 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.espaCouchDB'), 'VatIdOrName', 'by_beneficiaryDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','',''); 
+                            $searchvar8 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.australiaSellersCouchDB'), 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','',''); 
+                            
+                            $searchvar = array_merge((array)$searchvar1,(array)$searchvar2,(array)$searchvar3,(array)$searchvar4,(array)$searchvar5,(array)$searchvar6,(array)$searchvar7,(array)$searchvar8);
                     } else {
                         if (strlen(utf8_decode($varKeyword)) == 12 ) {
-                            # $search->getAll(solrPath,companiesSolrCore,'gemhNumber', $varKeyword,'',companiesUrl);    
-                             # $search->getAll(solrPath,FRSolrCore,'gemhNumber', $varKeyword,'',companiesUrl);  
-                            $searchvar1 = $search->getAllCompaniesCouch(config('search.DbPath'),config('search.lucenePath'), config('search.FRcouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'gemhnumber',config('search.orgtypescouchDB'));  
-                            $searchvar2 = $search->getAllCompaniesCouch(config('search.DbPath'),config('search.lucenePath'), config('search.companiescouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'gemhnumber',config('search.orgtypescouchDB')); 
-                            $searchvar3 =NULL;     
+                            $searchvar1 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.FRcouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'gemhnumber',config('search.orgtypescouchDB'),config('search.chamberscouchDB'));  
+                            $searchvar2 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.companiescouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'gemhnumber',config('search.orgtypescouchDB'),config('search.chamberscouchDB')); 
+                            #$searchvar3 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.tedcouchDB') , 'VatIdOrName', 'VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','');  
+                            #$searchvar3 =NULL;     
+                            #$searchvar4 =NULL;
                            
                             $searchvar = array_merge((array)$searchvar1,(array)$searchvar2);
                         } else {
-                           # $search->getAllCompaniesCouch(DbPath, FRcouchDB , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, couchUser, couchPass,companiesUrl,'gemhnumber');  
+                           if (strlen(utf8_decode($varKeyword)) == 11 ) {
+                               $searchvar1 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.australiaSellersCouchDB'), 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','',''); 
+                               $searchvar = $searchvar1;
+                           }
+                           else {
+                              $searchvar1 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.nonGemhcouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'vat',config('search.orgtypescouchDB'),config('search.chamberscouchDB'));    
+                              $searchvar2 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.companiescouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'vat',config('search.orgtypescouchDB'),config('search.chamberscouchDB'));  
+                              $searchvar3 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.tedcouchDB') , 'VatIdOrName', 'VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','','');                           
+                              $searchvar4 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.FRcouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'vat',config('search.orgtypescouchDB'),config('search.chamberscouchDB')); 
+                              $searchvar5 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.diaugeiaSellersCouchDB'), 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','',''); 
+                              $searchvar6 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.khmdhsSellersCouchDB'), 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','',''); 
+                              $searchvar7 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.espaCouchDB'), 'VatIdOrName', 'by_beneficiaryDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','',''); 
+                              $searchvar8 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.australiaSellersCouchDB'), 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','',''); 
+                              $searchvar = array_merge((array)$searchvar1,(array)$searchvar2,(array)$searchvar3,(array)$searchvar4,(array)$searchvar5,(array)$searchvar6,(array)$searchvar7,(array)$searchvar8);
+                           }
+                               
                         }
                     } 
                          
@@ -291,27 +312,64 @@ class FormSearchController2 extends Controller
                 } else { //name
 
                      if (count($words) === 1){
-                        $searchvar1 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.tedcouchDB') , 'VatIdOrName', 'VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','');  
-                        $searchvar2 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.companiescouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',config('search.orgtypescouchDB'));  
-                        $searchvar3 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.nonGemhcouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',config('search.orgtypescouchDB'));  
-                        #$searchvar2 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.australiaSellersCouchDB') , 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','');  
-                        #$searchvar3 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.diaugeiaSellersCouchDB') , 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','');  
-                        #$searchvar4 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.espaCouchDB') , 'VatIdOrName', 'by_beneficiaryDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','');  
-                        #$searchvar5 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.khmdhsSellersCouchDB') , 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','');  
-                        #$searchvar6 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.FRcouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',config('search.orgtypescouchDB'));  
+                        $searchvar1 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.nonGemhcouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',config('search.orgtypescouchDB'),config('search.chamberscouchDB'));  
+                        $searchvar2 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.companiescouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',config('search.orgtypescouchDB'),config('search.chamberscouchDB'));  
+                        $searchvar3 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.tedcouchDB') , 'VatIdOrName', 'VatIdOrName', $Wc, 400, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','','');  
+                        $searchvar4 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.FRcouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',config('search.orgtypescouchDB'),config('search.chamberscouchDB'));  
+                        $searchvar5 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.diaugeiaSellersCouchDB') , 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','','');  
+                        $searchvar6 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.khmdhsSellersCouchDB'), 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','',''); 
+                        $searchvar7 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.espaCouchDB') , 'VatIdOrName', 'by_beneficiaryDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','','');  
+                        $searchvar8 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.australiaSellersCouchDB'), 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','',''); 
                         
+                        
+                        #$searchvar5 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.khmdhsSellersCouchDB') , 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','');  
+                       
+                       $searchvar = array_merge((array)$searchvar1,(array)$searchvar2,(array)$searchvar3,(array)$searchvar4,(array)$searchvar5,(array)$searchvar6,(array)$searchvar7,(array)$searchvar8);
+                        #echo count($searchvar);
+                        # $searchvar = array_merge((array)$searchvar1,(array)$searchvar3);
+                        ////fuzziness///
+                       /* if (count($searchvar == 0 && strlen(utf8_decode($varKeyword)>=4))){
+                            $searchvar1 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.nonGemhcouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc_wild, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',config('search.orgtypescouchDB'));  
+                            $searchvar2 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.companiescouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc_wild, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',config('search.orgtypescouchDB'));  
+                            $searchvar3 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.tedcouchDB') , 'VatIdOrName', 'VatIdOrName', $Wc_wild, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','');  
+                            $searchvar4 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.FRcouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc_wild, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',config('search.orgtypescouchDB'));  
+                            $searchvar5 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.diaugeiaSellersCouchDB') , 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc_wild, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','');  
+                            $searchvar6 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.khmdhsSellersCouchDB'), 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc_wild, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',''); 
+                            $searchvar7 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.espaCouchDB') , 'VatIdOrName', 'by_beneficiaryDtls_VatIdOrName', $Wc_wild, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','');  
+                            $searchvar8 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.australiaSellersCouchDB'), 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc_wild, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',''); 
+                            
+                            $searchvar = array_merge((array)$searchvar1,(array)$searchvar2,(array)$searchvar3,(array)$searchvar4,(array)$searchvar5,(array)$searchvar6,(array)$searchvar7,(array)$searchvar8);
+                             if (count($searchvar == 0)){
+                                 $searchvar1 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.nonGemhcouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc_fuzzy, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',config('search.orgtypescouchDB'));  
+                                 $searchvar2 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.companiescouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc_fuzzy, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',config('search.orgtypescouchDB'));  
+                                 $searchvar3 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.tedcouchDB') , 'VatIdOrName', 'VatIdOrName', $Wc_fuzzy, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','');  
+                                 $searchvar4 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.FRcouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc_fuzzy, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',config('search.orgtypescouchDB'));  
+                                 $searchvar5 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.diaugeiaSellersCouchDB') , 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc_fuzzy, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','');  
+                                 $searchvar6 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.khmdhsSellersCouchDB'), 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc_fuzzy, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',''); 
+                                 $searchvar7 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.espaCouchDB') , 'VatIdOrName', 'by_beneficiaryDtls_VatIdOrName', $Wc_fuzzy, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','');  
+                                 $searchvar8 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.australiaSellersCouchDB'), 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc_fuzzy, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',''); 
+                                 
+                                 $searchvar = array_merge((array)$searchvar1,(array)$searchvar2,(array)$searchvar3,(array)$searchvar4,(array)$searchvar5,(array)$searchvar6,(array)$searchvar7,(array)$searchvar8);
+                             } 
+                        }*/
                        
 
                       }
                     else {
                         $termsArray = $newKeyWord->prepareExactKeyword($varKeyword);
                         $exactFullKeyword = $termsArray[3];
-                        $searchvar1 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.tedcouchDB') , 'VatIdOrName', 'VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','');  
-                        $searchvar2=  $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.companiescouchDB') , 'VatIdOrName', 'VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','');  
-                        $searchvar3 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.nonGemhcouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',config('search.orgtypescouchDB')); 
+                        $searchvar1 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.nonGemhcouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',config('search.orgtypescouchDB'),config('search.chamberscouchDB'));
+                        $searchvar2=  $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.companiescouchDB') , 'VatIdOrName', 'VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',config('search.orgtypescouchDB'),config('search.chamberscouchDB'));  
+                        $searchvar3 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.tedcouchDB') , 'VatIdOrName', 'VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','','');  
+                        $searchvar4 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.FRcouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',config('search.orgtypescouchDB'),config('search.chamberscouchDB'));  
+                        $searchvar5 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.diaugeiaSellersCouchDB') , 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','','');  
+                        $searchvar6 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.khmdhsSellersCouchDB'), 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','',''); 
+                        $searchvar7 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.espaCouchDB') , 'VatIdOrName', 'by_beneficiaryDtls_VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','',''); 
+                        $searchvar8 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.australiaSellersCouchDB'), 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','',''); 
+                       
                         #$searchvar1 = $search->getAllCompaniesCouch(config('search.DbPath'),config('search.lucenePath'), config('search.FRcouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',config('search.orgtypescouchDB'));  
                         #$searchvar2 = $search->getAllCompaniesCouch(config('search.DbPath'),config('search.lucenePath'), config('search.companiescouchDB') , 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $exactFullKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',config('search.orgtypescouchDB'));  
-                        
+                        $searchvar = array_merge((array)$searchvar1,(array)$searchvar2,(array)$searchvar3,(array)$searchvar4,(array)$searchvar5,(array)$searchvar6,(array)$searchvar7,(array)$searchvar8);
                        
                     }
 
@@ -319,20 +377,21 @@ class FormSearchController2 extends Controller
                     
 
                      #$searchvar = array_merge((array)$searchvar1,(array)$searchvar2,(array)$searchvar3,(array)$searchvar4,(array)$searchvar5,(array)$searchvar6,(array)$searchvar7,(array)$searchvar8);
-                    $searchvar = array_merge((array)$searchvar1,(array)$searchvar2,(array)$searchvar3);
+                   
 
             
                 }
 
                 $resultsPresentation = new showResults2();
             
-                $table_str = $resultsPresentation->presentResults(config('search.solrPath'), $searchvar, $isdirector);
+                $table_str = $resultsPresentation->presentResults(config('search.solrPath'), $searchvar, $isdirector,$lang,'','');
                 
 
                 $time_post = microtime(true);
                 $exec_time = $time_post - $time_pre;
                 $table_str .=  "<div ALIGN='CENTER'>";
-                $table_str .= '(Σε '.number_format($exec_time,2).' δευτερόλεπτα)' ;
+                $table_str .= __('lang.advancedSearchResults_frm_time1').' '.number_format($exec_time,2).' '.__('lang.advancedSearchResults_frm_time2');
+                       
                 $table_str .= "</div>";
                
                 $varKeyword =  str_replace('+',' ',$varKeyword);

@@ -5,7 +5,7 @@ namespace App;
 use Config;
 
 
-class collectData {
+class collectData3 {
    function getAll($solrPath,$solrCore,$field, $varKeyword,$operand,$personsUrl){
        #global $Limit;
        #$this->prepareResults($DbPath,"elod_diaugeia_hybrids","buyerVatIdOrName","by_buyerDtls_VatIdOrName",$LuceneOperand,25,"score",$varKeyword,$couchUser,$couchPass);
@@ -29,115 +29,21 @@ class collectData {
        return $this->prepareResultsCouchPersons($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,25,"score",$varKeyword,$couchUser,$couchPass,$Url,$term);
    }
    
-   function getAllCompaniesCouchOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term,$orgtypescouchDB,$chamberscouchDB){
+   function getAllCompaniesCouchOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term,$orgtypescouchDB,$chamberscouchDB,$advCriteria){
        global $Limit;
-       return $this->prepareResultsCouchOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term,$orgtypescouchDB,$chamberscouchDB);       		  
+       return $this->prepareResultsCouchOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term,$orgtypescouchDB,$chamberscouchDB,$advCriteria);       		  
    }
    function getAllCorporationsCouchOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term,$orgtypescouchDB){
        global $Limit;
        return $this->prepareResultsCouchCorporationsOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term,$orgtypescouchDB);       		  
    }
 
-   function prepareResultsCouch($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$lbUrl,$term, $orgtypescouchDB) {
-       $couchUserPwd = $couchUser.':'.$couchPass;
-       $ch = curl_init();
-       $url = $DbPath.$lucenePath.$Db."/_design/".$DesignDoc."/".$Index."?q=".$term.":".$varKeyword.$Wc."&limit:".$Limit."&sort:".$Sort;
-       echo $url.PHP_EOL;
    
-       curl_setopt($ch, CURLOPT_URL, $url);
-       curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-       curl_setopt($ch, CURLOPT_USERPWD, $couchUserPwd );
-       curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                       'Content-type: application/json; charset=utf-8',
-                       'Accept: */*'
-                    ));
-
-       $response = curl_exec($ch); 
-
-
-     
-       curl_close($ch);
-       global $prefix; 
-       $Results = array();
-       //global $Results;
-       //config('search.Results');
-       global $Lang;
-      
-        
-       $json = json_decode($response,true);
-       if(isset ($json['rows'])) {
-           foreach($json['rows'] as $r){     
-               global $Boost;
-                $Boost = 1.2;
-                    switch ($Wc) { //boost step 1
-                    case "";{	            
-                       $r['score'] *=$Boost;
-                       break; 
-                    }
-                    case "*"; {
-                       $r['score'] *=1;
-                        break; 
-
-                    }
-                    case "~0.75"; {
-                       $r['score'] *=1;
-                       break; 
-                    }
-                }
-                
-                if (isset ($json['rows'])  ){ //rules to show or hide results
-                    if (isset($r['fields']['orgType'])){
-                        $orgtypeKey = str_replace('/', '_', $r['fields']['orgType']);
-                        $orgtypeKey = str_replace('/', '_',  $orgtypeKey);
-                        $orgtypeFront = $this->getOrgtypeDesc($DbPath, $orgtypescouchDB, $couchUserPwd, $orgtypeKey);
-                    }
-                    else {
-                        $orgtypeFront = '';
-                    }
-                    
-                    
-                    $newdata =  array (
-                        'db' => $Db,
-                        'name' => (isset($r['fields']['name'])) ? $r['fields']['name'] : null ,            
-                        'vat' => $r['fields']['term'][0],
-                        'gemhNumber' => (isset($r['fields']['gemhnumber'])) ?$r['fields']['gemhnumber'] : null , 
-                        'cpaTitle' => (isset($r['fields']['cpaTitle'])) ?$r['fields']['cpaTitle'] : null , 
-                        'orgType' => (isset($r['fields']['orgType'])) ?$r['fields']['orgType'] : null , 
-                        'orgTypeFront' => $orgtypeFront , 
-                        'chamber' => (isset($r['fields']['chamber'])) ? $r['fields']['chamber'] : null ,  
-                        'gemhDate' => (isset($r['fields']['gemhdate'])) ? $r['fields']['gemhdate'] : null ,  
-                        'address'=>(isset($r['fields']['address']) ) ? $r['fields']['address'] : null ,
-                        'pc'=>(isset($r['fields']['pc']) ) ? $r['fields']['pc'] : null ,   
-                        'city'=>(isset($r['fields']['city']) ) ? $r['fields']['city'] : null ,
-                        'link' =>   $lbUrl.$r['fields']['link'].'/basic?s=1',
-                        'score' =>  $r['score'],
-                        'id' => $r['id']
-                    );
-                   
-                }
-                $arrayElements = count($Results);
-                if  ($arrayElements <= 1000 && isset($newdata)){
-                      $key = $this->searchForId($newdata['vat'], $Results,'vat');
-                      if ($key === NULL){
-
-                          $Results[] = $newdata;      //insert whole record                              
-                          //Config::set('session.driver', $Results);
-                      }
-                      
-                  }
-               
-           }
-       }
-       
-       return $Results;
-   }
-
    function prepareResultsCouchPersons($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$lbUrl,$term) {
        $couchUserPwd = $couchUser.':'.$couchPass;
        $ch = curl_init();
        $url = $DbPath.$lucenePath.$Db."/_design/".$DesignDoc."/".$Index."?q=".$term.":".$varKeyword.$Wc."&limit:".$Limit."&sort:".$Sort;
-       echo $url.PHP_EOL;
+       #echo $url.PHP_EOL;
        curl_setopt($ch, CURLOPT_URL, $url);
        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -238,10 +144,11 @@ class collectData {
    
 
     
-   function prepareResultsCouchOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$lbUrl,$term,$orgtypescouchDB,$chamberscouchDB){
+   function prepareResultsCouchOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$lbUrl,$term,$orgtypescouchDB,$chamberscouchDB,$advCriteria){
        $couchUserPwd = $couchUser.':'.$couchPass;
        $ch = curl_init();
-       $url = $DbPath.$lucenePath.$Db."/_design/".$DesignDoc."/".$Index."?q=".$term.":".$varKeyword.$Wc."&limit:".$Limit."&sort:".$Sort;
+       $url = $DbPath.$lucenePath.$Db."/_design/".$DesignDoc."/".$Index."?q=".$term.":".$varKeyword.$Wc.$advCriteria."&limit:".$Limit."&sort:".$Sort;
+       $this->createLogFileCall($url);
        #echo $url.PHP_EOL;
    
        curl_setopt($ch, CURLOPT_URL, $url);
@@ -322,6 +229,7 @@ class collectData {
                         'chamber' => (isset($r['fields']['chamber'])) ? $r['fields']['chamber'] : null ,  
                         'chamber_eng' => $chamber_en  , 
                         'gemhDate' => (isset($r['fields']['gemhdate'])) ? $r['fields']['gemhdate'] : null ,  
+                        'status' => (isset($r['fields']['status'])) ? $r['fields']['status'] : null ,  
                         'address'=>(isset($r['fields']['address']) ) ? $r['fields']['address'] : null ,
                         'pc'=>(isset($r['fields']['pc']) ) ? $r['fields']['pc'] : null ,   
                         'city'=>(isset($r['fields']['city']) ) ? $r['fields']['city'] : null ,
@@ -945,4 +853,20 @@ class collectData {
         fclose($myfile);
 
     }
+    
+    function createLogFileCall($url){
+        #$settingsFile = '../gsis/gsisProps.txt';
+        $settingsFile = '/home/negkas/searchLaravel/lastCall.txt' ;
+       
+        $myfile = fopen($settingsFile, "w") or die("Unable to open file!");
+        $txt = $url;
+        fwrite($myfile, $txt);
+        
+        
+        #$txt="Output:".gsisApi_pass.PHP_EOL; 
+        #fwrite($myfile, $txt);
+        fclose($myfile);
+
+    }
+    
 }
