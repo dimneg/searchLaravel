@@ -35,8 +35,12 @@ return [
 	'khmdhsBuyersCouchDB'=>'elod_buyers',
         'corporationsCouchDB'=>'yds_corporations',
         'espaCouchDB'=>'elod_espa_beneficiaries',
+        'cpa_l1_CouchDB'=>'lb_cpa_l1',
+        'messagesSearch_CouchDB'=>'lb_search_messages',
 	'sparqlServer' => 'http://143.233.226.49:8890',
-	'personsUrl' => 'http://dashboard.linkedbusiness.gr/gr/person/',
-	'companiesUrl' => 'http://dashboard.linkedbusiness.gr/gr/company/',
+	'personsUrl' => 'http://dashboard.linkedbusiness.gr/gr/person/', //deprecated
+	'companiesUrl' => 'http://dashboard.linkedbusiness.gr/gr/company/', //deprecated
+        'personsLbUrl' => '/person/',
+	'companiesLbUrl' => '/company/',
         'corporationsUrl' => '/corporate/'
 ];

@@ -33,6 +33,10 @@ class collectData3 {
        global $Limit;
        return $this->prepareResultsCouchOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term,$orgtypescouchDB,$chamberscouchDB,$advCriteria);       		  
    }
+   function getAllMessagesCouch($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term,$orgtypescouchDB,$chamberscouchDB,$advCriteria){
+       global $Limit;
+       return $this->prepareResultsMessages($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term,$orgtypescouchDB,$chamberscouchDB,$advCriteria);       		  
+   }
    function getAllCorporationsCouchOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term,$orgtypescouchDB){
        global $Limit;
        return $this->prepareResultsCouchCorporationsOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term,$orgtypescouchDB);       		  
@@ -425,7 +429,93 @@ class collectData3 {
        }
        return $Results;
    }
-    
+   function prepareResultsMessages($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$lbUrl,$term,$orgtypescouchDB,$chamberscouchDB,$advCriteria){
+       $couchUserPwd = $couchUser.':'.$couchPass;
+       $ch = curl_init();
+       $url = $DbPath.$lucenePath.$Db."/_design/".$DesignDoc."/".$Index."?q=".$term.":".$varKeyword.$Wc.$advCriteria."&limit:".$Limit."&sort:".$Sort;
+       $this->createLogFile("messages",$url);
+       #echo $url.PHP_EOL;
+   
+       curl_setopt($ch, CURLOPT_URL, $url);
+       curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+       curl_setopt($ch, CURLOPT_USERPWD, $couchUserPwd );
+       curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                       'Content-type: application/json; charset=utf-8',
+                       'Accept: */*'
+                    ));
+
+       $response = curl_exec($ch); 
+
+
+     
+       curl_close($ch);
+ 
+       $Results = array();
+       //global $Results;
+       //config('search.Results');
+      
+       
+       $json = json_decode($response,true);
+       
+       if(isset ($json['rows'])) {
+           foreach($json['rows'] as $r){     
+               global $Boost;
+                $Boost = 1.2;
+                    switch ($Wc) { //boost step 1
+                    case "";{	            
+                       $r['score'] *=$Boost;
+                       break; 
+                    }
+                    case "*"; {
+                       $r['score'] *=1;
+                        break; 
+
+                    }
+                    case "~0.80"; {
+                       $r['score'] *=1;
+                       break; 
+                    }
+                }
+                
+                if (isset ($json['rows'])  ){ //rules to show or hide results
+                   
+                    
+                    $newdata =  array (
+                        'db' => $Db,
+                        'name' => (isset($r['fields']['message_gr'])) ? $r['fields']['message_gr'] : null ,  
+                        'vat' => 'vatMessage', 
+                        
+                        'score' =>  $r['score'],
+                        'id' => $r['id'],
+                        'message'=>'1'
+                        
+                      
+                        
+                       
+                        
+                        
+                       
+                        
+                        
+                    );
+                   
+                }
+                $arrayElements = count($Results);
+                if  ($arrayElements <= 1000 && isset($newdata)){
+                      $key = $this->searchForId($newdata['vat'], $Results,'vat');
+                      if ($key === NULL){
+
+                          $Results[] = $newdata;      //insert whole record                              
+                        
+                      }
+                      
+                  }
+               
+           }
+       }
+       return $Results;
+   } 
    function defineSource($db, $field, $status,$isTed){
        #echo 'defining source: '.$db.' '.$field.' '.$status.PHP_EOL;
       # 0-> clean 1-> ok 2-> do nothing
@@ -541,33 +631,7 @@ class collectData3 {
                                   : $afm[8] == $remainder;
     }
     
-   function getAltNamesSolr($solrPath,$solrCore,$vat){
-       $ch = curl_init();
-       $url = $solrPath.$solrCore."/select?indent=on&q=id:".$vat."&wt=json";
-       $url = str_replace(' ','%20',$url);	
-      # echo $url.PHP_EOL;
-       curl_setopt($ch, CURLOPT_URL, $url);
-       curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-       curl_setopt($ch, CURLOPT_USERPWD, 'dimneg:dim1978');			
-       curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        'Content-type: application/json; charset=utf-8',
-	'Accept: */*'
-         ));
-       
-       $response = curl_exec($ch); 
-                
-       $json = json_decode($response,true);
-       curl_close($ch);	
-       if (isset ($json['response']['docs'][0]['alt_names']) ){
-           # return implode(', ', $json['response']['alt_names']);
-           #echo implode(', ', $json['response']['alt_names']);
-          # print_r($json['response']['docs'][0]['alt_names']);
-            return implode(', ', $json['response']['docs'][0]['alt_names']);
-       }
-       #return $json;
-       
-   } 
+   
    function getCorporationCouch($solrPath,$solrCore,$vat){
        $return = 0;
        $ch = curl_init();
@@ -599,82 +663,13 @@ class collectData3 {
        curl_close($ch);	
        return $return;
    }
-   function getCorporationDetailsSolr($solrPath,$solrCore,$corpId){
-       $cnt = 0;
-       $ch = curl_init();
-       $url = $solrPath.$solrCore."/select?indent=on&q=core:".$corpId."&rows=20&wt=json";
-       $url = str_replace(' ','%20',$url);
-       #echo $url.PHP_EOL;
-       curl_setopt($ch, CURLOPT_URL, $url);
-       curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-       curl_setopt($ch, CURLOPT_USERPWD, 'dimneg:dim1978');			
-       curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        'Content-type: application/json; charset=utf-8',
-	'Accept: */*'
-       ));
-       $response = curl_exec($ch);                 
-       $json = json_decode($response,true);
-       $response = [];
-       $responseArray = [
-           [
-               
-           ]];
-       curl_close($ch);
-       if (isset ($json['response']['docs'][0])){
-           foreach ($json['response']['docs'] as $key => $value) {
-               $responseArray[$cnt]['db_id'] = $value['db_id'][0];
-               $responseArray[$cnt]['name'] = $value['name'][0];
-               $responseArray[$cnt]['country'] = $value['country'][0];
-               $responseArray[$cnt]['uniqueShow'] = mb_convert_case($value['name'][0].$value['country'][0], MB_CASE_UPPER, "UTF-8");
-               #$response[] = '['.$value['db_id'][0];
-               #$response[] = $value['name'][0];
-               #$response[] = $value['country'][0].']';
-            $cnt++;
-               
-               
-           }
-           return  [$json['response']['docs'][0]['coreName'][0],$responseArray];
-           
-           #return [$json['response']['docs'][0]['coreName'][0],implode(', ', $response)];
-          
-       }
-               
-   }
+   
    
    
    
    
  
-   function getTedDataRDF($vat,$sparqlServer){
-      
-       $ch = curl_init();
-       $url = $sparqlServer."/sparql/?default-graph-uri=http%3A%2F%2Fyourdatastories.eu%2Fvirtual&query=SELECT+%28sum%28xsd%3Adecimal%28%3FcurrencyValue%29%29+as+%3FsumOfAmounts%29%0D%0AFROM+<http%3A%2F%2Fyourdatastories.eu%2FTEDGreece>%0D%0AWHERE+%7B%0D%0A%3Fcontract+elod%3Abuyer+<http%3A%2F%2Flinkedeconomy.org%2Fresource%2FOrganization%2F090025586>+%3B%0D%0Apc%3AagreedPrice+%3FagreedPrice+.%0D%0A%3FagreedPrice+gr%3AhasCurrencyValue+%3FcurrencyValue+.%0D%0A%7D&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on";
-       #echo $url.PHP_EOL;
-       curl_setopt_array($ch, array(
-           CURLOPT_PORT => "8890",
-           CURLOPT_URL => $url ,
-           CURLOPT_RETURNTRANSFER => true,
-           CURLOPT_ENCODING => "",
-           CURLOPT_MAXREDIRS => 10,
-           CURLOPT_TIMEOUT => 600,
-           CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-           CURLOPT_CUSTOMREQUEST => "GET",
-           CURLOPT_HTTPHEADER => array(
-	    "cache-control: no-cache",
-	    "postman-token: b79e291a-0eef-efe9-3d63-e067a3535154",
-            'Content-type: application/json; charset=utf-8',
-	    'Accept: */*'
-	  ),
-          ));
-       $response = curl_exec($ch);
-       $err = curl_error($ch);
-       $json = json_decode($response,true);
-       curl_close($ch);
-       if (isset ($json['results']['bindings'][0]['sumOfAmounts']) ){
-            return $json['results']['bindings'][0] ['sumOfAmounts'];
-       }
-   }
+   
    
    function transliterate($word){
        $word = mb_convert_case($word, MB_CASE_UPPER, "UTF-8");
@@ -839,9 +834,11 @@ class collectData3 {
        
    }
    
-   function createLogFile($url){
+   
+    
+    function createLogFileCall($url){
         #$settingsFile = '../gsis/gsisProps.txt';
-        $settingsFile = '/home/negkas/searchLaravel/chamber.txt' ;
+        $settingsFile = '/home/negkas/searchLaravel/lastCall.txt' ;
        
         $myfile = fopen($settingsFile, "w") or die("Unable to open file!");
         $txt = $url;
@@ -853,13 +850,12 @@ class collectData3 {
         fclose($myfile);
 
     }
-    
-    function createLogFileCall($url){
+    function createLogFile($i,$txt){
         #$settingsFile = '../gsis/gsisProps.txt';
-        $settingsFile = '/home/negkas/searchLaravel/lastCall.txt' ;
+        $settingsFile = '/home/negkas/searchLaravel/'.$i.'.txt' ;
        
         $myfile = fopen($settingsFile, "w") or die("Unable to open file!");
-        $txt = $url;
+        #$txt = $url;
         fwrite($myfile, $txt);
         
         

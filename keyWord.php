@@ -223,7 +223,7 @@ return $translated;
             $len=count($words);
             foreach($words as $w) {		
                if ($i == 0)  {	
-                   if	(mb_strlen($w, 'utf-8') >3) { 			   
+                   if	(mb_strlen($w, 'utf-8') >2) { 			   
 			$t1 = $w;
 		    }
 			$w='"'.$w.'+';			 
@@ -234,7 +234,7 @@ return $translated;
 			       
                    if ($i == 1) 	
                    {
-				      if	(mb_strlen($w, 'utf-8') >3 ){ 
+				      if	(mb_strlen($w, 'utf-8') >2 ){ 
 				      $t2 = $w;	
                       }					 
 				   }	
@@ -260,4 +260,9 @@ $t12= '"'.$t1."+".$t2.'"';
 }
 return array($t1,$t2,$t12,$word);
 }
+
+   function removeIllegalChars($word)       {
+       $word = str_replace('&','',$word);
+       return $word;
+   } 
 }

@@ -1,13 +1,7 @@
 @extends('layouts.app_nofooter')
 
 @section('content')
-<?php
-$adv_orgType= '';
-#$search_in_amount = '';
-$crf1 = '';
-$crf2 = '';
-$crf3 = '';
-?>
+
 
 <div id="wrapper">
 
@@ -46,62 +40,126 @@ $crf3 = '';
 												<input name="_token" type="hidden" value="{{ csrf_token() }}">
 												<div style="margin:20px 0px; display:inline-block; width:100%;">
 													<input type="text" id="searchKey" name="searchKey" value="{{ $varKeyword }}" class="searchText" placeholder='{{ __('lang.advancedSearchPlaceholder') }}'>
-													<input type="submit" value="Search" class="searchSubmit">
+													<input type="submit" value='{{ __('lang.advancedSearchPlaceholderDatatables') }}' class="searchSubmit">
 													<div class="error" style="float:left; margin-top:5px;">{{ __('lang.field_required') }}</div>
 												</div>
 												<span class="advanced_search" onClick="showHideAdvanceSearch()">{{ __('lang.advancedSearchBtn') }}</span>
                                                                                                  <div id="advanced-search-box" <?php if(empty($advance_search_submit)) { ?>style="display:none;"<?php } ?>>
-                                                                                                    <!--<label class="search-label">Αναζήτηση με Διεύθυνση:</label>
-                                                                                                    <div>
-                                                                                                            <input type="text" name="crf1" id="crf1" class="demoInputBox" action="index.php"  	/>
-                                                                                                    </div>
-                                                                                                    <label class="search-label">Αναζήτηση με ΤΚ:</label>
-                                                                                                    <div>
-                                                                                                            <input type="text" name="crf2" id="crf2" class="demoInputBox" value="<?php echo $crf2; ?>"	/> 
-                                                                                                      
-                                                                                                                   </form>
+                                                                                                   
+                                                                                                     <table>
+                                                                                                         <tr>
+                                                                                                              <td>
+                                                                                                                <form id="selectOrgtype" name="selectOrgtype" method="get" action="{{ route('home') }}/{{ $lang }}/advancedsearchtest3">
+                                                                                                                     <table width="225" border="1">
+                                                                                                                       <tr>
+                                                                                                                         <td><label>{{ __('lang.advancedSearchCritOrgtype') }}</label>&nbsp;</td>
+                                                                                                                         <td>
+                                                                                                                             <select id="selectOrgtype"  name="selectOrgtype[]" size="6" multiple="multiple" tabindex="1">
+                                                                                                                                <option value="FR">{{ __('lang.advancedSearchCritOrgtype_FR') }}</option>
+                                                                                                                                <option value="PLC*">{{ __('lang.advancedSearchCritOrgtype_PLC') }}</option>
+                                                                                                                                <option value="GP">{{ __('lang.advancedSearchCritOrgtype_GP') }}</option>
+                                                                                                                                <option value="LP">{{ __('lang.advancedSearchCritOrgtype_LP') }}</option>
+                                                                                                                                <option value="LTD*">{{ __('lang.advancedSearchCritOrgtype_LTD') }}</option>
+                                                                                                                                <option value="PC*">{{ __('lang.advancedSearchCritOrgtype_PC') }}</option>
+                                                                                                                                <option value=" ">{{ __('lang.advancedSearchCritOrgtype_UKN') }}</option>
+                                                                                                                             </select>
+                                                                                                                         </td>
+                                                                                                                       </tr>
+                                                                                                                      
+                                                                                                                     </table>
+                                                                                                                   </form> 
 
-                                                                                                    </div>   -->
-                                                                                                   <form id="selectOrgtype" name="selectOrgtype" method="get" action="{{ route('home') }}/{{ $lang }}/advancedsearchtest3">
-                                                                                                        <table width="300" border="1">
-                                                                                                          <tr>
-                                                                                                            <td><label>Επιλογή εταιρικού τύπου:</label>&nbsp;</td>
-                                                                                                            <td><select id="selectOrgtype"  name="selectOrgtype[]" size="6" multiple="multiple" tabindex="1">
-                                                                                                              <option value="FR">Ελ. Επαγγ.</option>
-                                                                                                              <option value="PLC*">ΑΕ</option>
-                                                                                                              <option value="GP">ΟΕ</option>
-                                                                                                              <option value="LP">ΕΕ</option>
-                                                                                                              <option value="LTD*">ΕΠΕ</option>
-                                                                                                              <option value="PC*">ΙΚΕ</option>
-                                                                                                              <option value=" ">Άγνωστο</option>
-                                                                                                              
-                                                                                                            </select>
-                                                                                                            </td>
+                                                                                                               </td>
+                                                                                                                <td>
+                                                                                                                    <table>...</table>
+                                                                                                                </td>
+                                                                                                                <td>
+                                                                                                                                                                                                             
+                                                                                                                        <table width="225" border="1">
+                                                                                                                            <tr>
+                                                                                                                                <td><label>{{ __('lang.advancedSearchCritStatus') }}</label>&nbsp;</td>
+                                                                                                                                <td>
+                                                                                                                                    <select id="activeStatus"  name="activeStatus[]" size="6" multiple="multiple"  tabindex="1">
+                                                                                                                                        <option value="Active">{{ __('lang.advancedSearchCritStatus_Active') }}</option>
+                                                                                                                                        <option value=" "></option>
+                                                                                                                                     </select>
+                                                                                                                                 </td>
+                                                                                                                                
+                                                                                                                            </tr>
+                                                                                                                            
+                                                                                                                        </table>       
+                                                                                                                       
+                                                                                                              </td>
                                                                                                           </tr>
-                                                                                                         <!-- <tr>
-                                                                                                            <td>&nbsp;</td>
-                                                                                                            <td><input type="submit" name="selectOrgtype" value="selectOrgtype" /></td>
-                                                                                                          </tr>-->
-                                                                                                        </table>
-                                                                                                      </form> 
-                                                                                                    
+                                                                                                          
+                                                                                                          <tr><table>...</table></tr>
+                                                                                                          
+                                                                                                           <tr>
+                                                                                                              
+                                                                                                                <td>
+                                                                                                                    <table width="225" border="1">
+                                                                                                                        <tr>
+                                                                                                                            <td><label>{{ __('lang.advancedSearchCritChamber') }}</label>&nbsp;</td>
+                                                                                                                               <td  size="3">
+                                                                                                                                     <select id="selectChamber"  name="selectChamber[]" size="6" width ="10" multiple="multiple"  tabindex="1">      
+                                                                                                                                    
+                                                                                                                                       <?php
+                                                                                                                                           $chambersArray =  getShowChambers(config('search.DbPath'),config('search.chamberscouchDB'),config('search.couchUser'), config('search.couchPass')); 
+                                                                                                                                           if (isset($chambersArray['rows'] )){
+                                                                                                                                                foreach ($chambersArray['rows'] as $chamber){ if (isset($chamber['doc']['chamber_gr'])){ ?>
+                                                                                                                                                 <option value="<?= $chamber['doc']['chamber_gr']?>" ><?=  mb_substr($chamber['doc']['chamber_gr'], 0,75, "utf-8")?> </option>
+                                                                                                                                           <?php } 
+                                                                                                                                           } 
+                                                                                                                                           }
+                                                                                                                                           
+                                                                                                                                            
+                                                                                                                                            
 
-                                                                                                    
-                                                                                                    <form id="showOnlyActive" method="post" align="right" action="{{ route('home') }}/{{ $lang }}/advancedsearchtest3">
-                                                                                                        
-                                                                                                         <!--<input type="checkbox" class="searchSubmit" id="showOnlyActive" name="showOnlyActive"  value="showOnlyActive" /> <label>Show only Active</label>-->  
-                                                                                                       <!-- <input type="submit" name="showOnlyActive" value="Yes" />-->  
-                                                                                                       <!-- <input type="checkbox" name="showOnlyActive" value="showOnlyActive"> <label>showOnlyActive</label> -->                                                                                                                                                                                          
-                                                                                                         <input type="submit" name="showOnlyActive" value="Ενεργές" />
-                                                                                                    </form>
-                                                                                                    
-                                                                                                    
+                                                                                                                                        ?>
+                                                                                                                                  </select>
+                                                                                                                               </td>
+                                                                                                                        </tr>
+                                                                                                                     </table>
+                                                                                                                    
+                                                                                                               </td>
+                                                                                                                </tr>
+                                                                                                                 <tr><table>...</table></tr>
+                                                                                                                <tr>
+                                                                                                                 <td>
+                                                                                                                                                                                                                  
+                                                                                                                        <table width="10" border="1">
+                                                                                                                            <tr>
+                                                                                                                                <td  width ="10" ><label>Επιλογή ΚΑΔ</label>&nbsp;</td>
+                                                                                                                                <td  width ="10" >
+                                                                                                                                    <select id="selectCPA"  name="selectCPA[]" size="6" width ="10" multiple="multiple"  tabindex="1">
+                                                                                                                                         <?php
+                                                                                                                                           $cpa_l1_Array =  getShowCpa_l1(config('search.DbPath'),config('search.cpa_l1_CouchDB'),config('search.couchUser'), config('search.couchPass')); 
+                                                                                                                                           if (isset($cpa_l1_Array ['rows'] )){
+                                                                                                                                                foreach ($cpa_l1_Array ['rows'] as $cpa_l1){ if (isset($cpa_l1['doc']['title'])){ ?>
+                                                                                                                                        <option value="<?= $cpa_l1['doc']['code']?>" ><?= mb_substr($cpa_l1['doc']['title'], 0,75, "utf-8")?> </option>
+                                                                                                                                           <?php } 
+                                                                                                                                           } 
+                                                                                                                                           }
+                                                                                                                                           
+                                                                                                                                            
+                                                                                                                                            
+
+                                                                                                                                        ?>
+                                                                                                                                     </select>
+                                                                                                                                 </td>
+                                                                                                                                
+                                                                                                                            </tr>
+                                                                                                                         </tr>    
+                                                                                                                        </table>       
+                                                                                                                      
+                                                                                                                  
+                                                                                                                 </td>  
+                                                                                                         
+                                                                                                    </tr> 
+                                                                                                   </table>   
                                                                                                     
                                                                                               <div>
-                                                                                           <!--  <div> <input type="submit" name="Go" class="btnSearch"  value="Search" action="{{ route('home') }}/{{ $lang }}/advancedsearchtest3"  method="post" accept-charset="UTF-8" >
-                                                                                                 <input type="submit" name="Go" class="btnSearch"  value="Search" action="{{ route('home') }}/{{ $lang }}/advancedsearchtest3"  method="post" accept-charset="UTF-8" >
-                                                                                              
-                                                                                             </div>  -->  
+                                                                                         
                                                                                             </div>
                                                                                             </div>
 											</form>				
@@ -200,8 +258,9 @@ $crf3 = '';
 	$("#tab1").click(function(){
 	    //alert("Tab 1 clicked.");
 	    $( "#searchFormCompanies" ).submit();
-            $( "#showOnlyActive" ).submit();
+            $( "#activeStatus" ).submit();
             $( "#selectOrgtype" ).submit();
+            $( "#selectCPA" ).submit();
 	});
 
 	$("#tab2").click(function(){
@@ -215,21 +274,64 @@ $crf3 = '';
         if(document.getElementById("advanced-search-box").style.display=="none") {
             document.getElementById("advanced-search-box").style.display = "block";
 	    document.getElementById("advance_search_submit").value= "1";
-             document.getElementById("showOnlyActive").value= "1";
+             document.getElementById("activeStatus").value= "1";
              document.getElementById("selectOrgtype").value= "1";
+             document.getElementById("selectChamber").value= "1";
+             document.getElementById("selectCPA").value= "1";
             }
             else {
 		document.getElementById("advanced-search-box").style.display = "none";
-		document.getElementById("showOnlyActive").value= "" 
-		//document.getElementById("crf2").value= "";
-		//document.getElementById("crf3").value= "";
-		//document.getElementById("search_in").value= "";
+		document.getElementById("activeStatus").value= "" 
 		document.getElementById("advance_search_submit").value= "";
                 document.getElementById("selectOrgtype").value= "";
+                document.getElementById("selectChamber").value= "";
+                document.getElementById("selectCPA").value= "";
 	    }
    }
 </script>
 <footer>
 </footer>
-	
+<?php
+function getShowChambers($DbPath,$Db,$couchUser, $couchPass ){
+    $couchUserPwd = $couchUser.':'.$couchPass;
+    $ch = curl_init();
+    $url = $DbPath.$Db.'/'.'_all_docs?include_docs=true';                                                                                                                                                
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_USERPWD, $couchUserPwd );
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+    'Content-type: application/json; charset=utf-8',
+    'Accept: */*'
+    ));
+
+    $response = curl_exec($ch); 
+    curl_close($ch);
+    $json = json_decode($response,true);
+    return $json;
+
+
+}
+function getShowCpa_l1($DbPath,$Db,$couchUser, $couchPass ){
+    $couchUserPwd = $couchUser.':'.$couchPass;
+    $ch = curl_init();
+    $url = $DbPath.$Db.'/'.'_all_docs?include_docs=true';                                                                                                                                                
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_USERPWD, $couchUserPwd );
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+    'Content-type: application/json; charset=utf-8',
+    'Accept: */*'
+    ));
+
+    $response = curl_exec($ch); 
+    curl_close($ch);
+    $json = json_decode($response,true);
+    return $json;
+
+
+}
+
+?>
 @endsection	

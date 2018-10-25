@@ -51,10 +51,25 @@ class showResults3 {
 
         $table_str .= "<tbody>";
         
-        //corporation
-        
-     
-        if ($isdirector == 1){ //persons
+        //wrong or unassigned vat
+        if (isset($Results[0]['vat'])){
+            if ($Results[0]['vat']== 'vatMessage') {
+            $name = $Results[0]['name'];
+            $table_str .= "<tr>";
+            $table_str .= "<td style=\" text-align:left; border-left: 0px solid #ccc; font-size:15px; padding-right:0px;\">"; 
+            $table_str .=   " <font  color='#FF0000' >$name</font> ";  
+            $table_str .= "</td>";
+
+            $table_str .= "<td style=\" text-align:left; border-left: 0px solid #ccc; font-size:15px; padding-right:0px;  width:80px;\">";
+            $table_str .= $Results[0]['score']; //hidden
+            $table_str .= "</td>";
+                   
+                
+
+             $table_str .= "</tr>"; 
+        }
+        else {
+             if ($isdirector == 1){ //persons
             $i = 0;
             $uniqueResults = array_filter($Results);
             $sumResults = count($uniqueResults);
@@ -165,6 +180,7 @@ class showResults3 {
         else {
             $i = 1;
             #$this->saveCsvCloud($Results, '/home/negkas/searchLaravel/results.csv');
+            
             $uniqueResults = array_filter($this->groupResults($Results)); //let 's see if there is need to group
             #$this->saveCsvCloud($uniqueResults, '/home/negkas/searchLaravel/uniqueResults.csv');
             $sumResults = count($uniqueResults);
@@ -479,6 +495,13 @@ class showResults3 {
             $i++;
          }
         }
+        }
+        //corporation
+        }
+        
+        
+     
+       
         
        
          

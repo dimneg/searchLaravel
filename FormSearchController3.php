@@ -137,25 +137,49 @@ class FormSearchController3 extends Controller
 
     public function index_test(Request $request, $lang = null)
     {
+        $newKeyWord = new keyWord();
        $this->createLogFile("all",$request);
+       #$allargs = $request->input() ;
+      # print_r ( $allargs );
+       #$allargs = implode(',', $allargs  );
+       #$this->createLogFile("allargs",$allargs );
         //return 0;
         $isdirector = $request->input("isdirector"); 
         $search =  $request->input("searchKey"); 
+        $activeStatus = $request->input('activeStatus');
+        $selectOrgtype = $request->input('selectOrgtype');
+        $selectCPA = $request->input('selectCPA');
+        $selectChamber = $request->input('selectChamber');
+        
+        
         
         $advCriteria = "";
         
-        $active = $request->input("showOnlyActive");
-        $this->createLogFile("showOnlyActive",$active);
-        if ($active !=''){
-            $activeUrlStem = "%20AND%20status:'Ενεργή'";
+        //////status//////
+        
+        #if (isset($activeStatus)){
+            
+        #}
+        if (is_array($activeStatus)){
+            $activeStatusList = implode(',', $activeStatus  );
+            $this->createLogFile("activeStatusList",$activeStatusList);
         }
         else {
-             $activeUrlStem ='';
+            $this->createLogFile("activeStatus",$activeStatus);
         }
-        $advCriteria .= $activeUrlStem;
+        if (isset($activeStatus )){
+        #if ($activeStatus !=''){
+            $activeStatusUrlStem = "%20AND%20status:'Ενεργή'";
+        }
+        else {
+             $activeStatusUrlStem ='';
+        }
         
-       #$selectOrgtype= whereIn('selectOrgtype', $request->input('selectOrgtype', []))->get();
-        $selectOrgtype= $request->input('selectOrgtype');
+        $advCriteria .= $activeStatusUrlStem;
+        
+         //////orgtype//////
+        
+        
         if (is_array($selectOrgtype)){
             $selectOrgtypeList = implode(',', $selectOrgtype );
              $this->createLogFile("selectOrgtypeList",$selectOrgtypeList);
@@ -166,7 +190,7 @@ class FormSearchController3 extends Controller
         
         
        
-       #if ($selectOrgtype !='' ){
+     
        if (isset($selectOrgtype)){
            $selectOrgtypeUrlStem ="%20AND%20(";
            
@@ -177,6 +201,7 @@ class FormSearchController3 extends Controller
                     $selectOrgtypeUrlStem .= "%20OR%20";
                 }
                 $selectOrgtypeUrlStem .= "orgType:".$value."";
+               
             }
             #$selectOrgtypeUrlStem ='';
             $selectOrgtypeUrlStem .= ")";
@@ -187,6 +212,77 @@ class FormSearchController3 extends Controller
         } 
                 
        $advCriteria .=  $selectOrgtypeUrlStem ; 
+       
+          //////CPA//////
+       
+      if (is_array($selectCPA)){
+            $selectCPAList = implode(',', $selectCPA );
+             $this->createLogFile("selectCPA",$selectCPAList);
+        }
+        else {
+            $this->createLogFile("selectCPA",$selectCPA);
+        }
+        
+        
+     
+       
+       if (isset($selectCPA)){
+           $selectCPAUrlStem ="%20AND%20(";
+           
+           
+            foreach ($selectCPA as $key => $value) {
+                # $valueFixedArray = $newKeyWord->prepareExactKeyword($value );
+                if ($key>0){
+                    $selectCPAUrlStem .= "%20OR%20";
+                }
+                $selectCPAUrlStem .= "level1Code:".$value."";
+            }
+            #$selectOrgtypeUrlStem ='';
+            $selectCPAUrlStem .= ")";
+        }
+        
+        else {
+             $selectCPAUrlStem ='';
+        } 
+                
+       $advCriteria .=  $selectCPAUrlStem ; 
+       
+       
+       //////chamber//////
+        if (is_array($selectChamber)){
+            $selectChamberList = implode(',', $selectChamber );
+             $this->createLogFile("selectChamber",$selectChamberList);
+        }
+        else {
+            $this->createLogFile("selectChamber",$selectChamber);
+        }
+        
+        
+     
+       #if ($selectOrgtype !='' ){
+       if (isset($selectChamber)){
+           $selectChamberUrlStem ="%20AND%20(";
+           
+           
+            foreach ($selectChamber as $key => $value) {
+                 $valueFixedArray = $newKeyWord->prepareExactKeyword($value );
+                if ($key>0){
+                    $selectChamberUrlStem .= "%20OR%20";
+                }
+                $selectChamberUrlStem .= "chamber:".$newKeyWord->removeIllegalChars($valueFixedArray[3])."";
+            }
+            #$selectOrgtypeUrlStem ='';
+            $selectChamberUrlStem .= ")";
+        }
+        
+        else {
+             $selectChamberUrlStem ='';
+        } 
+                
+       $advCriteria .=  $selectChamberUrlStem ; 
+        
+        
+        
        
         $table_str = "";
 
@@ -236,7 +332,7 @@ class FormSearchController3 extends Controller
         $term2 = '';
         $term12 = '';
 
-        $newKeyWord = new keyWord();
+        
         $table_str = "";
 
 
@@ -311,15 +407,17 @@ class FormSearchController3 extends Controller
                     if (strlen(utf8_decode($varKeyword)) >=8 && strlen(utf8_decode($varKeyword)) <=10 ) {
                         if ($this->checkAFM($varKeyword) != 1){
                             #$table_str .=  "<div ALIGN='CENTER'>";
-                            echo __('lang.advancedSearchIncorrectVat'); 
+                           # echo __('lang.advancedSearchIncorrectVat'); 
+                            $varKeyword = 'wrong_vat';
+                            $searchvar1 = $search->getAllMessagesCouch(config('search.DbPath'),config('search.lucenePath'), config('search.messagesSearch_CouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term',config('search.orgtypescouchDB'),config('search.chamberscouchDB'),$advCriteria);  
                             #$table_str .= "</div>";
-                            #$searchvar = null;
-                            exit();
+                            $searchvar =  $searchvar1;
+                           # exit();
                         }
                         else {
                             $searchvar1 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.nonGemhcouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'vat',config('search.orgtypescouchDB'),config('search.chamberscouchDB'),$advCriteria);    
                             $searchvar2 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.companiescouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'vat',config('search.orgtypescouchDB'),config('search.chamberscouchDB'),$advCriteria);  
-                            $searchvar3 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.tedcouchDB') , 'VatIdOrName', 'VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','','',$advCriteria);                           
+                            $searchvar3 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.tedcouchDB') , 'VatIdOrName', 'VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','','','');                           
                             $searchvar4 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.FRcouchDB'), 'buyerVatIdOrName', 'by_buyerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'vat',config('search.orgtypescouchDB'),config('search.chamberscouchDB'),$advCriteria); 
                             $searchvar5 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.diaugeiaSellersCouchDB'), 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','','',$advCriteria); 
                             $searchvar6 = $search->getAllCompaniesCouchOpj(config('search.DbPath'),config('search.lucenePath'), config('search.khmdhsSellersCouchDB'), 'sellerVatIdOrName', 'by_sellerDtls_VatIdOrName', $Wc, $Limit, $Sort, $varKeyword, config('search.couchUser'), config('search.couchPass'),config('search.companiesUrl'),'term','','',$advCriteria); 
@@ -495,5 +593,7 @@ class FormSearchController3 extends Controller
         fclose($myfile);
 
     }
+    
+    
 
 }
