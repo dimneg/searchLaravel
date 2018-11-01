@@ -1,4 +1,4 @@
-@extends('layouts.app_nofooter')
+@extends('layouts.app')
 
 @section('content')
 
@@ -19,38 +19,73 @@
 						
 							<div id="exTab1" class="container">
 								<ul  class="nav nav-pills">
-									
-									@if ($isdirector == 1) 
+									@if ($isdirector == 2) 
+                    <li><a id="tab0" class="left active" href="#0a" data-toggle="tab">{{ __('lang.companies') }}  ({{ __('lang.advancedSearchVat')}})</a></li>
+                    <li><a id="tab1" class="left" href="#1a" data-toggle="tab">{{ __('lang.companies') }} </a></li>
+                    <li><a id="tab2" class="right" href="#2a" data-toggle="tab">{{ __('lang.managers_directors') }} </a></li>
+									@elseif ($isdirector == 1) 
+                    <li><a id="tab0" class="left" href="#0a" data-toggle="tab">{{ __('lang.companies') }}  ({{ __('lang.advancedSearchVat')}})</a></li>
 										<li><a id="tab1" class="left" href="#1a" data-toggle="tab">{{ __('lang.companies') }} </a></li>
 										<li><a id="tab2" class="right active" href="#2a" data-toggle="tab">{{ __('lang.managers_directors') }} </a></li>
 									@else
+                    <li><a id="tab0" class="left" href="#0a" data-toggle="tab">{{ __('lang.companies') }}  ({{ __('lang.advancedSearchVat')}})</a></li>
 										<li><a id="tab1" class="left active" href="#1a" data-toggle="tab">{{ __('lang.companies') }}</a></li>
 										<li><a id="tab2" class="right" href="#2a" data-toggle="tab">{{ __('lang.managers_directors') }}</a></li>
 									@endif
 								</ul>
 
 								<div class="tab-content clearfix">
-									@if ($isdirector == 1) 
-										<div class="tab-pane" id="1a">
+                   @if ($isdirector == 2)
+                    <div class="tab-pane fade show active" id="0a">
+                  @else 
+                    <div class="tab-pane fade" id="0a">                      
+                  @endif                      
+                    <div class="search">
+                      <form method="post" action="{{ route('home') }}/{{ $lang }}/pro" id="searchFormGemh">
+                        <input name="_token" type="hidden" value="{{ csrf_token() }}">
+                        <div style="margin:20px 0px; display:inline-block; width:100%;">
+                          <input type="text" id="searchKey" name="searchKey" value="{{ $varKeyword }}" class="searchText" placeholder='{{ __('lang.advancedSearchPlaceholder_gemh_vat_only') }}'>
+                          <input type="hidden" name="isdirector" value="2">
+                          <input type="submit" value='{{ __('lang.advancedSearchPlaceholderDatatables') }}' class="searchSubmit">
+                          <div class="error" style="float:left; margin-top:5px;">{{ __('lang.field_required') }}</div>
+                        </div>                      
+                      </form>    
+                      <form method="post" action="{{ route('home') }}/{{ $lang }}/search" id="searchFormGEMH2">
+                        <input name="_token" type="hidden" value="{{ csrf_token() }}">
+                        <input type="hidden" name="isdirector" value="2">
+                      </form>            
+                    </div>
+                    <div class="searchCloud">
+                  
+                  @foreach ($lastSearched as $item)
+                    @if(substr($item->sbu_vatid,0,7)=="company" ||  substr($item->sbu_vatid,0,6)=="person")
+                    <a href="{{ route('home') }}/{{ $lang }}/{{ $item->sbu_vatid }}/basic?s=1" class="cloudlink">{{ $item->sbu_title }}</a>
+                    @endif
+                  @endforeach
+                </div>  
+                  </div>
+									@if ($isdirector == 3) 
+										<div class="tab-pane fade show active" id="1a">
 									@else 
-										<div class="tab-pane active" id="1a">											
+										<div class="tab-pane fade" id="1a">											
 									@endif
 										<div class="search">
-											<form method="post" action="{{ route('home') }}/{{ $lang }}/advancedsearchtest" id="searchFormCompanies">
+											<form method="post" action="{{ route('home') }}/{{ $lang }}/search" id="searchFormCompanies">
 												<input name="_token" type="hidden" value="{{ csrf_token() }}">
 												<div style="margin:20px 0px; display:inline-block; width:100%;">
 													<input type="text" id="searchKey" name="searchKey" value="{{ $varKeyword }}" class="searchText" placeholder='{{ __('lang.advancedSearchPlaceholder') }}'>
+                          <input type="hidden" name="isdirector" value="3">
 													<input type="submit" value='{{ __('lang.advancedSearchPlaceholderDatatables') }}' class="searchSubmit">
 													<div class="error" style="float:left; margin-top:5px;">{{ __('lang.field_required') }}</div>
 												</div>
 												<!--<span class="advanced_search" onClick="showHideAdvanceSearch()">{{ __('lang.advancedSearchBtn') }}</span> -->
-                                                                                                <span class="advanced_search" onClick="showHideAdvanceSearch()">{{ __('lang.advancedSearchBtn') }}</span> 
+                                                                                                <span class="advanced_search"  style="display:none;" onClick="showHideAdvanceSearch()">{{ __('lang.advancedSearchBtn') }}</span> 
                                                                                                  <div id="advanced-search-box" <?php if(empty($advance_search_submit)) { ?>style="display:none;"<?php } ?>>
                                                                                                    
                                                                                                      <table>
                                                                                                          <tr>
                                                                                                               <td>
-                                                                                                                <form id="selectOrgtype" name="selectOrgtype" method="get" action="{{ route('home') }}/{{ $lang }}/advancedsearchtest">
+                                                                                                                <form id="selectOrgtype" name="selectOrgtype" method="get" action="{{ route('home') }}/{{ $lang }}/search">
                                                                                                                      <table width="225" border="1">
                                                                                                                        <tr>
                                                                                                                          <td><label>{{ __('lang.advancedSearchCritOrgtype') }}</label>&nbsp;</td>
@@ -164,15 +199,20 @@
                                                                                             </div>
                                                                                             </div>
 											</form>				
-										</div>										
+										</div>	
+                      <div class="search_results" style="margin-top: 40px;">
+                      {!! $table_str !!}
+                    </div>									
 									</div>
+                 
+
 									@if ($isdirector == 1)
-										<div class="tab-pane active" id="2a">
+										<div class="tab-pane fade show active" id="2a">
 									@else 
-										<div class="tab-pane" id="2a">											
+										<div class="tab-pane fade" id="2a">											
 									@endif											
 										<div class="search">
-											<form method="post" action="{{ route('home') }}/{{ $lang }}/advancedsearchtest" id="searchFormDirectors">
+											<form method="post" action="{{ route('home') }}/{{ $lang }}/search" id="searchFormDirectors">
 												<input name="_token" type="hidden" value="{{ csrf_token() }}">
 												<div style="margin:20px 0px; display:inline-block; width:100%;">
 													<input type="text" id="searchKey" name="searchKey" value="{{ $varKeyword }}" class="searchText" placeholder='{{ __('lang.advancedSearchPlaceholder_managers_directors') }}'>
@@ -182,6 +222,10 @@
 												</div>											
 											</form>								
 										</div>
+                      <div class="search_results" style="margin-top: 40px;">
+                      {!! $table_str1 !!}
+                      </div>
+                    </div>
 {{--
 										<div class="search_results" style="margin-top: 40px;">
 											{!! $table_str !!}
@@ -208,37 +252,9 @@
 													</script>
 										</div>
 --}}										
-									</div>
+                  
 
-									<div class="search_results" style="margin-top: 40px;">
-											{!! $table_str !!}
-
-											<script type="text/javascript">
-														$('#searchResults').DataTable({
-														"aaSorting": [[ 1, "desc" ]],
-
-															  responsive: true,									
-																"lengthChange": true,
-																"paging": true,
-																"pagingType": "simple",
-																"info": true,
-																
-																//"ordering": true,
-																"language": {   "sSearch": "<i class='icon icon-magnify'></i>", 
-																				searchPlaceholder: "{{ __('lang.advancedSearchPlaceholderDatatables') }} ",
-																				"lengthMenu": "{{ __('lang.advancedSearchResults_lengthMenu') }}",
-																				"paginate": { "previous": "<", "next": ">" },
-																				"info": "_START_ - _END_ από _TOTAL_",
-																				"sInfoEmpty": "0 - _END_ από _TOTAL_",
-																				"emptyTable": "{{ __('lang.empty_table') }}",
-																				"decimal": ".",
-							            										"thousands": ""													
-																			},
-																
-																"aoColumnDefs": [{ "bVisible": false, "aTargets": [ 1 ] }]
-														});													
-													</script>
-										</div>
+										
 
 								</div>
 							</div>
@@ -251,24 +267,70 @@
 		</div>
 	</div>
 
+
 	@include('sidebar')
 
 </div>
+
+<script type="text/javascript">
+                            $('#searchResults').DataTable({
+                            "aaSorting": [[ 1, "desc" ]],
+
+                                responsive: true,                 
+                                "lengthChange": true,
+                                "paging": true,
+                                "pagingType": "simple",
+                                "info": true,
+                                
+                                //"ordering": true,
+                                "language": {   "sSearch": "<i class='icon icon-magnify'></i>", 
+                                        searchPlaceholder: "{{ __('lang.advancedSearchPlaceholderDatatables') }} ",
+                                        "lengthMenu": "{{ __('lang.advancedSearchResults_lengthMenu') }}",
+                                        "paginate": { "previous": "<", "next": ">" },
+                                        "info": "_START_ - _END_ από _TOTAL_",
+                                        "sInfoEmpty": "0 - _END_ από _TOTAL_",
+                                        "emptyTable": "{{ __('lang.empty_table') }}",
+                                        "decimal": ".",
+                                              "thousands": ""                         
+                                      },
+                                
+                                "aoColumnDefs": [{ "bVisible": false, "aTargets": [ 1 ] }]
+                            });                         
+                          </script>
 	
 <script>
 	$("#tab1").click(function(){
 	    //alert("Tab 1 clicked.");
-	    $( "#searchFormCompanies" ).submit();
-            $( "#activeStatus" ).submit();
-            $( "#selectOrgtype" ).submit();
-            $( "#selectCPA" ).submit();
+	    // $( "#searchFormCompanies" ).submit();
+     //        $( "#activeStatus" ).submit();
+     //        $( "#selectOrgtype" ).submit();
+     //        $( "#selectCPA" ).submit();
+     var element1 = document.getElementById("0a");
+    element1.classList.remove("active");
+    var element2 = document.getElementById("2a");
+    element2.classList.remove("active");
 	});
 
 	$("#tab2").click(function(){
 	    //alert("Tab 2 clicked.");
-	    $( "#searchFormDirectors" ).submit();
+	    //$( "#searchFormDirectors" ).submit();
+      var element1 = document.getElementById("0a");
+    element1.classList.remove("active");
+    var element2 = document.getElementById("1a");
+    element2.classList.remove("active");
+  
 	});
 
+  $("#tab0").click(function(){
+      //alert("Tab 2 clicked.");
+      // $( "#searchFormGEMH2" ).submit();
+      var element1 = document.getElementById("1a");
+    element1.classList.remove("active");
+    var element2 = document.getElementById("2a");
+    element2.classList.remove("active");
+  });
+
+  
 </script>
 <script>
     function showHideAdvanceSearch() {
@@ -290,8 +352,7 @@
 	    }
    }
 </script>
-<footer>
-</footer>
+
 <?php
 function getShowChambers($DbPath,$Db,$couchUser, $couchPass ){
     $couchUserPwd = $couchUser.':'.$couchPass;

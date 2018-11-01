@@ -24,9 +24,9 @@ class collectData {
        global $Limit;
        return $this->prepareResultsCouch($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,25,"score",$varKeyword,$couchUser,$couchPass,$companiesUrl,$term,$orgtypescouchDB);
    }
-   function getAllPersonsCouch($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term){
+   function getAllPersonsCouch($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$UrlPersons,$term){
        global $Limit;
-       return $this->prepareResultsCouchPersons($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,25,"score",$varKeyword,$couchUser,$couchPass,$Url,$term);
+       return $this->prepareResultsCouchPersons($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,25,"score",$varKeyword,$couchUser,$couchPass,$Url,$UrlPersons,$term);
    }
    
    function getAllCompaniesCouchOpj($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$Url,$term,$orgtypescouchDB,$chamberscouchDB,$advCriteria){
@@ -43,7 +43,7 @@ class collectData {
    }
 
    
-   function prepareResultsCouchPersons($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$lbUrl,$term) {
+   function prepareResultsCouchPersons($DbPath,$lucenePath,$Db,$DesignDoc,$Index,$Wc,$Limit,$Sort,$varKeyword,$couchUser,$couchPass,$lbUrl,$lbUrlPersons,$term) {
        $couchUserPwd = $couchUser.':'.$couchPass;
        $ch = curl_init();
        $url = $DbPath.$lucenePath.$Db."/_design/".$DesignDoc."/".$Index."?q=".$term.":".$varKeyword.$Wc."&limit:".$Limit."&sort:".$Sort;
@@ -87,7 +87,12 @@ class collectData {
                 }
                 
                 if (isset ($json['rows'])  ){ //rules to show or hide results
-                    
+                    if (isset($r['fields']['isCompany']) && $r['fields']['isCompany']==1){
+                        $uri = $lbUrl;
+                    } 
+                    else {
+                       $uri = $lbUrlPersons;
+                    }
                     $newdata =  array (
                         'db' => $Db,
                         'name' => (isset($r['fields']['name'])) ? $r['fields']['name'] : null ,         
@@ -107,7 +112,7 @@ class collectData {
                         's_ownCompanyName'=>isset($r['fields']['s_ownCompanyName']) ? $r['fields']['s_ownCompanyName'] : '',
                         's_ownCompanyLink'=>isset($r['fields']['s_ownCompanyLink']) ? $r['fields']['s_ownCompanyLink'] : '',
                         #'link' =>  $intUrl.$r['fields']['link'].'/basic?s=1',
-                        'link' =>  isset ($r['fields']['link']) ? $lbUrl.$r['fields']['link'].'/basic?s=1' : '',
+                        'link' =>  isset ($r['fields']['link']) ? $uri .$r['fields']['link'].'/basic?s=1' : '',
                         'score' =>  $r['score'],
                         'id' => $r['id']
                     );
@@ -192,7 +197,7 @@ class collectData {
                 if (isset ($json['rows'])  ){ //rules to show or hide results
                     if (isset($r['fields']['orgType'])){
                         $orgtypeKey = str_replace('/', '_', $r['fields']['orgType']);
-                        $orgtypeKey = str_replace('/', '_',  $orgtypeKey);
+                        $orgtypeKey = str_replace(' ', '_',  $orgtypeKey);
                         $orgtypeFront = $this->getOrgtypeDesc($DbPath, $orgtypescouchDB, $couchUserPwd, $orgtypeKey);
                     }
                     else {
@@ -285,7 +290,7 @@ class collectData {
                         'SubsPaymentsAmount'=>(isset($r['fields']['SubsPaymentsAmount']) ) ? $r['fields']['SubsPaymentsAmount'] : 0 ,	
                         'SubsContractsCounter'=>(isset($r['fields']['SubsContractsCounter']) ) ? $r['fields']['SubsContractsCounter'] : 0 ,
                         'SubsPaymentsCounter'=> (isset($r['fields']['SubsPaymentsCounter']) ) ? $r['fields']['SubsPaymentsCounter'] : 0,  
-                        'espa_lastUpdate'=> (isset($r['fields']['espa_lastUpdate']) ) ? $r['fields']['espa_lastUpdate'] : 0 ,
+                        'espa_lastUpdate'=> (isset($r['fields']['espa_lastUpdate']) ) ? $r['fields']['espa_lastUpdate'] : null ,
                       
                         //australia
                         'contractAmount0'=> (isset($r['fields']['contractAmount0']) ) ? $r['fields']['contractAmount0'] : 0 ,
@@ -476,6 +481,7 @@ class collectData {
                     $newdata =  array (
                         'db' => $Db,
                         'name' => (isset($r['fields']['message_gr'])) ? $r['fields']['message_gr'] : null ,  
+                        'name_eng' => (isset($r['fields']['message_en'])) ? $r['fields']['message_en'] : null ,  
                         'vat' => 'vatMessage', 
                         
                         'score' =>  $r['score'],
@@ -775,7 +781,7 @@ class collectData {
    
    function getOrgtypeDesc($DbPath,$Db,$couchUserPwd,$orgtypekey  ){
        $ch = curl_init();
-       $url = $DbPath.$Db.'/'.$orgtypekey ;
+       $url = str_replace('5986','5984',$DbPath).$Db.'/'.$orgtypekey ;
        #echo $url.PHP_EOL;
        curl_setopt($ch, CURLOPT_URL, $url);
        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');

@@ -359,7 +359,7 @@ return [
 	'nacut' => 'Μη διαθέσιμο',
 	'basicfundamentals_lbl' => 'Βασικά στοιχεία',
         'corporate_groups' => 'Όμιλοι Επιχειρήσεων',
-        'advancedSearchPlaceholder' => 'Αναζήτηση με ΑΦΜ & επωνυμία σε 1.340.567 επιχειρήσεις',
+        'advancedSearchPlaceholder' => 'Αναζήτηση με ΑΦΜ, ΓΕΜΗ & επωνυμία σε 1.340.567 επιχειρήσεις',
         'advancedSearchPlaceholder_corporate' => 'Αναζήτηση με επωνυμία σε Όμιλους Επιχειρήσεων',
         'advancedSearchBtn' => 'Σύνθετη αναζήτηση',
         'advancedSearchResults_lengthMenu' => 'Εγγραφές ανά σελιδα _MENU_ ',
@@ -425,7 +425,8 @@ return [
     'advancedSearchManages' => 'Μέλος διοίκησης',
     'advancedSearchOwns' => 'Συμμετοχές',
     'advancedSearchPlus1' => 'και',
-    'advancedSearchPlus2' => 'ακόμα'    
+    'advancedSearchPlus2' => 'ακόμα',
+    'advancedSearchPlaceholder_gemh_vat_only' => 'Εισάγετε το ΑΦΜ της εταιρίας που σας ενδιαφέρει'    
 ];
 
 

@@ -359,7 +359,7 @@ return [
 	'nacut' => 'N/A',
 	'basicfundamentals_lbl' => 'Basic fundamentals',
         'corporate_groups' => 'Corporate Groups',
-        'advancedSearchPlaceholder' => 'Search using VAT & name in 1.340.567 companies',
+        'advancedSearchPlaceholder' => 'Search using VAT, GEMI & name in 1.340.567 companies',
         'advancedSearchPlaceholder_corporate' => 'Search using name in Corporate Groups',
         'advancedSearchBtn' => 'Advanced search',
         'advancedSearchResults_lengthMenu' => 'Records per page _MENU_ ',
@@ -426,4 +426,5 @@ return [
     'advancedSearchOwns' => 'Portfolio companies',
     'advancedSearchPlus1' => 'plus',
     'advancedSearchPlus2' => 'more',
+    'advancedSearchPlaceholder_gemh_vat_only' => 'Enter the VAT of the company of your interest' 
 ];

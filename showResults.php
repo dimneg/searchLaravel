@@ -54,20 +54,26 @@ class showResults {
         //wrong or unassigned vat
         if (isset($Results[0]['vat'])){
             if ($Results[0]['vat']== 'vatMessage') {
-            $name = $Results[0]['name'];
-            $table_str .= "<tr>";
-            $table_str .= "<td style=\" text-align:left; border-left: 0px solid #ccc; font-size:15px; padding-right:0px;\">"; 
-            $table_str .=   " <font  color='#FF0000' >$name</font> ";  
-            $table_str .= "</td>";
+                if (isset($lang) && $lang==="en" ){
+                      $name = $Results[0]['name_eng'];
+                }
+                else {
+                     $name = $Results[0]['name'];
+                }
+               
+                $table_str .= "<tr>";
+                $table_str .= "<td style=\" text-align:left; border-left: 0px solid #ccc; font-size:15px; padding-right:0px;\">"; 
+                $table_str .=   " <font  color='#FF0000' >$name</font> ";  
+                $table_str .= "</td>";
 
-            $table_str .= "<td style=\" text-align:left; border-left: 0px solid #ccc; font-size:15px; padding-right:0px;  width:80px;\">";
-            $table_str .= $Results[0]['score']; //hidden
-            $table_str .= "</td>";
-                   
-                
+                $table_str .= "<td style=\" text-align:left; border-left: 0px solid #ccc; font-size:15px; padding-right:0px;  width:80px;\">";
+                $table_str .= $Results[0]['score']; //hidden
+                $table_str .= "</td>";
 
-             $table_str .= "</tr>"; 
-        }
+
+
+                 $table_str .= "</tr>"; 
+            }
             else {
              if ($isdirector == 1){ //persons
             $i = 0;
@@ -210,7 +216,7 @@ class showResults {
             }
           
         }
-        else {
+        else  if ($isdirector == 3){ //COMPANIES
             $i = 1;
             #$this->saveCsvCloud($Results, '/home/negkas/searchLaravel/results.csv');
             
@@ -776,7 +782,14 @@ class showResults {
             $numbered=str_replace("$", "",$text);
             $numbered=str_replace("£", "",$numbered);
             $numbered=str_replace("B", "",$numbered);
-            $numbered*=1000000000;
+            $numbered=str_replace("Β", "",$numbered);
+            if (is_numeric($numbered)){
+                 $numbered*=1000000000;
+            }
+            else {
+                $numbered = 0;
+            }
+           
         }
         else {
             $numbered *= 1;
@@ -1051,7 +1064,7 @@ class showResults {
             $domain = "http://83.212.86.164:81/";
         }
         else {
-            $domain = "http://dashboard.linkedbusiness.gr/";
+            $domain = "http://dashboard.linkedbusiness.eu/";
         }
         return $domain;
     }
