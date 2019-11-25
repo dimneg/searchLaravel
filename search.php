@@ -36,6 +36,8 @@ return [
         'corporationsCouchDB'=>'yds_corporations',
         'espaCouchDB'=>'elod_espa_beneficiaries',
         'cpa_l1_CouchDB'=>'lb_cpa_l1',
+        'markets_CouchDB'=>'lb_markets',
+        'postalCodeCouchDB'=>'lb_postal_codes',
         'messagesSearch_CouchDB'=>'lb_search_messages',
 	'sparqlServer' => 'http://143.233.226.49:8890',
 	'personsUrl' => 'http://dashboard.linkedbusiness.gr/gr/person/', //deprecated

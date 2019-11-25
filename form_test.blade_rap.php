@@ -21,16 +21,16 @@
 								<ul  class="nav nav-pills">
 									@if ($isdirector == 2) 
                     <li><a id="tab0" class="left active" href="#0a" data-toggle="tab">{{ __('lang.companies') }}  ({{ __('lang.advancedSearchVat')}})</a></li>
-                    <li><a id="tab1" class="left" href="#1a" data-toggle="tab">cpa - test</a></li>
-                    <li><a id="tab2" class="right" href="#2a" data-toggle="tab">Κατάλογος </a></li>
+                    <li><a id="tab1" class="left" href="#1a" data-toggle="tab">{{ __('lang.companies') }} </a></li>
+                    <li><a id="tab2" class="right" href="#2a" data-toggle="tab">{{ __('lang.managers_directors') }} </a></li>
 									@elseif ($isdirector == 1) 
                     <li><a id="tab0" class="left" href="#0a" data-toggle="tab">{{ __('lang.companies') }}  ({{ __('lang.advancedSearchVat')}})</a></li>
-										<li><a id="tab1" class="left" href="#1a" data-toggle="tab">cpa - test</a></li>
-										<li><a id="tab2" class="right active" href="#2a" data-toggle="tab">Κατάλογος</a></li>
+										<li><a id="tab1" class="left" href="#1a" data-toggle="tab">{{ __('lang.companies') }} </a></li>
+										<li><a id="tab2" class="right active" href="#2a" data-toggle="tab">{{ __('lang.managers_directors') }} </a></li>
 									@else
                     <li><a id="tab0" class="left" href="#0a" data-toggle="tab">{{ __('lang.companies') }}  ({{ __('lang.advancedSearchVat')}})</a></li>
-										<li><a id="tab1" class="left active" href="#1a" data-toggle="tab">cpa - test</a></li>
-										<li><a id="tab2" class="right" href="#2a" data-toggle="tab">Κατάλογος</a></li>
+										<li><a id="tab1" class="left active" href="#1a" data-toggle="tab">{{ __('lang.companies') }}</a></li>
+										<li><a id="tab2" class="right" href="#2a" data-toggle="tab">{{ __('lang.managers_directors') }}</a></li>
 									@endif
 								</ul>
 
@@ -41,7 +41,7 @@
                     <div class="tab-pane fade" id="0a">                      
                   @endif                      
                     <div class="search">
-                      <form method="post" action="{{ route('home') }}/{{ $lang }}/advancedsearchtest3" id="searchFormGemh">
+                      <form method="post" action="{{ route('home') }}/{{ $lang }}/pro" id="searchFormGemh">
                         <input name="_token" type="hidden" value="{{ csrf_token() }}">
                         <div style="margin:20px 0px; display:inline-block; width:100%;">
                           <input type="text" id="searchKey" name="searchKey" value="{{ $varKeyword }}" class="searchText" placeholder='{{ __('lang.advancedSearchPlaceholder_gemh_vat_only') }}'>
@@ -50,7 +50,7 @@
                           <div class="error" style="float:left; margin-top:5px;">{{ __('lang.field_required') }}</div>
                         </div>                      
                       </form>    
-                      <form method="post" action="{{ route('home') }}/{{ $lang }}/advancedsearchtest3" id="searchFormGEMH2">
+                      <form method="post" action="{{ route('home') }}/{{ $lang }}/search" id="searchFormGEMH2">
                         <input name="_token" type="hidden" value="{{ csrf_token() }}">
                         <input type="hidden" name="isdirector" value="2">
                       </form>            
@@ -73,74 +73,41 @@
 										<div class="tab-pane fade" id="1a">											
 									@endif
 										<div class="search">
-											<form method="post" action="{{ route('home') }}/{{ $lang }}/advancedsearchtest3" id="searchFormCompanies">
+											<form method="post" action="{{ route('home') }}/{{ $lang }}/search" id="searchFormCompanies">
 												<input name="_token" type="hidden" value="{{ csrf_token() }}">
 												<div style="margin:20px 0px; display:inline-block; width:100%;">
-													<input type="text" id="searchKey" name="searchKey" value="cpa" class="searchText" placeholder='{{ __('lang.advancedSearchPlaceholder') }}'>
+													<input type="text" id="searchKey" name="searchKey" value="{{ $varKeyword }}" class="searchText" placeholder='{{ __('lang.advancedSearchPlaceholder') }}'>
                                                                                                         <input type="hidden" name="isdirector" value="3">
 													<input type="submit" value='{{ __('lang.advancedSearchPlaceholderDatatables') }}' class="searchSubmit">
 													<div class="error" style="float:left; margin-top:5px;">{{ __('lang.field_required') }}</div>
 												</div>
-											@if(isset($returnsearch["search"]))
-                        <span id="purs" class="btn-primary fuse-ripple-ready text-auto" title="searchterm" data-toggle="modal" style="font-size:75%; height: 2.5rem; line-height: 2.5rem;">&nbsp;Κλειδί: {{ $returnsearch["search"] }}&nbsp;</span>&nbsp;
-                        @endif
-                       
-                         @if(isset($returnsearch["cpa"])) 
-                         @foreach($returnsearch["cpa"] as $k=>$v) 
-                        <span id="purs" class=" btn-primary fuse-ripple-ready text-auto" title="searchterm" data-toggle="modal" style="font-size:75%; height: 2.5rem; line-height: 2.5rem;"> 
-                        <?php
-                                                                                                                                           $cpa_l1_Array =  getShowCpa_l1(config('search.DbPath'),config('search.cpa_l1_CouchDB'),config('search.couchUser'), config('search.couchPass')); 
-                                                                                                                                           if (isset($cpa_l1_Array ['rows'] )){
-                                                                                                                                                foreach ($cpa_l1_Array ['rows'] as $cpa_l1){ if (isset($cpa_l1['doc']['title'])){ if($cpa_l1['doc']['code']==$v) { ?>  &nbsp;Δραστηριότητα(ΚΑΔ):
-                                                                                                                                                  <?= mb_substr($cpa_l1['doc']['title'], 0,75, "utf-8")?>&nbsp; 
-                                                                                                                                           <?php } }
-                                                                                                                                           } 
-                                                                                                                                           }
-                                                                                                                                           
-                                                                                                                                            
-                                                                                                                                            
-
-                                                                                                                                        ?></span>&nbsp;
-                         @endforeach
-                        @endif
-                        @if(isset($returnsearch["market"])) 
-                         @foreach($returnsearch["market"] as $k=>$v) 
-                        <span id="purs" class=" btn-primary fuse-ripple-ready text-auto" title="searchterm" data-toggle="modal" style="font-size:75%; height: 2.5rem; line-height: 2.5rem;"> 
-                        <?php
-                                                                                                                                           $markets_Array =  getShowMarkets(config('search.DbPath'),config('search.markets_CouchDB'),config('search.couchUser'), config('search.couchPass')); 
-                                                                                                                                           if (isset($markets_Array ['rows'] )){
-                                                                                                                                                foreach ($markets_Array['rows'] as $market){ if (isset($market['doc']['titleGr'])){ if($market['doc']['code']==$v) { ?>  &nbsp;Market:
-                                                                                                                                                  <?= mb_substr($market['doc']['titleGr'], 0,75, "utf-8")?>&nbsp; 
-                                                                                                                                           <?php } }
-                                                                                                                                           } 
-                                                                                                                                           }
-                                                                                                                                           
-                                                                                                                                            
-                                                                                                                                            
-
-                                                                                                                                        ?></span>&nbsp;
-                         @endforeach
-                        @endif
-                        
-                        
-                        @if(isset($returnsearch["chamber"])) 
-                         @foreach($returnsearch["chamber"] as $k=>$v) 
-                         <span id="purs" class="btn-primary fuse-ripple-ready text-auto" title="searchterm" data-toggle="modal" style="font-size:75%; height: 2.5rem; line-height: 2.5rem;">&nbsp;Επιμελητήριο:  
-                        {{ $v }}&nbsp;</span>&nbsp;
-                         @endforeach
-                        @endif
-                        <br><br>   
-												<span class="advanced_search"  onClick="showHideAdvanceSearch()">{{ __('lang.advancedSearchBtn') }}</span> 
-                                                                                              <!--  <span class="advanced_search" style="display:none;" onClick="showHideAdvanceSearch()">{{ __('lang.advancedSearchBtn') }}</span> -->
+												 <span class="advanced_search" onClick="showHideAdvanceSearch()">{{ __('lang.advancedSearchBtn') }}</span>  
+                                                                                               <!-- <span class="advanced_search" style="display:none;" onClick="showHideAdvanceSearch()">{{ __('lang.advancedSearchBtn') }}</span> -->
                                                                                                  <div id="advanced-search-box" style="text-align: left; <?php if(empty($advance_search_submit)) { ?>display:none;<?php } ?>"> <!--<style="display:none;"-->
 
-                                                                                                  
+                                                                                                   <form id="selectOrgtype" name="selectOrgtype" method="get" action="{{ route('home') }}/{{ $lang }}/search">
+                                                                                                                    
+                                                                                                                        <label>{{ __('lang.advancedSearchCritOrgtype') }}</label>&nbsp;
+                                                                                                                        
+                                                                                                                             <select id="selectOrgtype"  name="selectOrgtype[]" tabindex="1">
+                                                                                                                                <option value="FR">{{ __('lang.advancedSearchCritOrgtype_FR') }}</option>
+                                                                                                                                <option value="PLC*">{{ __('lang.advancedSearchCritOrgtype_PLC') }}</option>
+                                                                                                                                <option value="GP">{{ __('lang.advancedSearchCritOrgtype_GP') }}</option>
+                                                                                                                                <option value="LP">{{ __('lang.advancedSearchCritOrgtype_LP') }}</option>
+                                                                                                                                <option value="LTD*">{{ __('lang.advancedSearchCritOrgtype_LTD') }}</option>
+                                                                                                                                <option value="PC*">{{ __('lang.advancedSearchCritOrgtype_PC') }}</option>
+                                                                                                                                <option value=" ">{{ __('lang.advancedSearchCritOrgtype_UKN') }}</option>
+                                                                                                                             </select>
+                                                                                                                   </form> 
                                                                                                    <br><br>
-                                                                               
-
 
                                                                                                    
-                                                                                                                         
+                                                                                                                           <label>Κατάσταση<!--{{ __('lang.advancedSearchCritStatus') }}--></label>&nbsp;
+                                                                                                                                
+                                                                                                                                    <select id="activeStatus"  name="activeStatus[]" tabindex="1">
+                                                                                                                                        <option value="Active">{{ __('lang.advancedSearchCritStatus_Active') }}</option>
+                                                                                                                                        <option value=" ">Όλες</option>
+                                                                                                                                     </select>
                                                                                                          
                                                                                                     <br><br>  
 
@@ -150,7 +117,6 @@
                                                                                                                                        <?php
                                                                                                                                            $chambersArray =  getShowChambers(config('search.DbPath'),config('search.chamberscouchDB'),config('search.couchUser'), config('search.couchPass')); 
                                                                                                                                            if (isset($chambersArray['rows'] )){
-                                                                                                                                               
                                                                                                                                                 foreach ($chambersArray['rows'] as $chamber){ if (isset($chamber['doc']['chamber_gr'])){ ?>
                                                                                                                                                  <option value="<?= $chamber['doc']['chamber_gr']?>" ><?=  mb_substr($chamber['doc']['chamber_gr'], 0,75, "utf-8")?> </option>
                                                                                                                                            <?php } 
@@ -165,7 +131,7 @@
 
                                                                                                     <br><br>  
 
-                                                                                                   <label>{{ __('lang.advancedSearchCritCPA') }}</label>&nbsp;
+                                                                                                   <label>Επιλογή ΚΑΔ</label>&nbsp;
                                                                                                                                     <select style="width:70%;" id="selectCPA"  name="selectCPA[]" tabindex="1">
                                                                                                                                          <?php
                                                                                                                                            $cpa_l1_Array =  getShowCpa_l1(config('search.DbPath'),config('search.cpa_l1_CouchDB'),config('search.couchUser'), config('search.couchPass')); 
@@ -183,27 +149,14 @@
                                                                                                                                      </select>
                                                                                                                                    
                                                                                                     <br><br>  
-                                                                                                    
-                                                                                                    <label>Market</label>&nbsp;
-                                                                                                                                    <select style="width:70%;" id="selectMarket"  name="selectmarket[]" tabindex="1">
-                                                                                                                                         <?php
-                                                                                                                                           $markets_Array =  getShowMarkets(config('search.DbPath'),config('search.markets_CouchDB'),config('search.couchUser'), config('search.couchPass')); 
-                                                                                                                                           if (isset( $markets_Array['rows'] )){?>
-                                                                                                                                               <option value="all" >Όλα</option>
-                                                                                                                                               <?php  foreach ($markets_Array['rows'] as $market){ if (isset($market['doc']['titleGr'])){  ?>
-                                                                                                                                              <option value="<?= $market['doc']['code']?>" ><?= mb_substr($market['doc']['titleGr'], 0,75, "utf-8")?> </option>
-                                                                                                                                                 
-                                                                                                                                           <?php } 
-                                                                                                                                           } 
-                                                                                                                                           }
-                                                                                                                                           
-                                                                                                                                            
-                                                                                                                                            
 
-                                                                                                                                        ?>
+                                                                                                    <label>Αναζήτηση σε</label>&nbsp;
+                                                                                                                                   <select id="searchAddress"  name="searchAddress[]" tabindex="1">
+                                                                                                                                        <option value="address">Διεύθυνση</option>
+                                                                                                                                         <option value="tk">Τ.Κ.</option>
+                                                                                                                                         <option value="region">Περιοχή</option>
+                                                                                                                                        <option value=" "></option>
                                                                                                                                      </select>
-
-                                                                                                    
                                                                                                                                                                              
 
                                                                                                      <table>
@@ -236,7 +189,13 @@
                       <div class="search_results" style="margin-top: 40px;">
                       {!! $table_str !!}
                     </div>	
-                    							
+                    <div style="text-align: left;"> 
+
+                      <br><img src="/images/slb.png" width="22"> Αν δεν γνωρίζετε τον ΑΦΜ της επιχείρησης τότε πληκτρολογήστε την επωνυμία ή τον αριθμό ΓΕΜΗ.   
+                      <br><img src="/images/slb.png" width="22"> Αποφεύγετε να εισάγετε λέξεις με λιγότερα από 5 γράμματα.
+                      <br><img src="/images/slb.png" width="22"> Στις ατομικές επιχειρήσεις, επιστρέφουμε ορθότερα αποτελέσματα όταν γράψετε πρώτα το επίθετο και μετά το όνομα.
+                      <br><img src="/images/slb.png" width="22"> Αν δεν τα καταφέρουμε και τότε, δοκιμάστε να εισάγετε μόνο το επίθετο και μετά στο κουτάκι δεξιά από τον φακό να εισάγετε το μικρό όνομα.
+                    </div>								
 									</div>
                  
 
@@ -246,7 +205,7 @@
 										<div class="tab-pane fade" id="2a">											
 									@endif											
 										<div class="search">
-											<form method="post" action="{{ route('home') }}/{{ $lang }}/advancedsearchtest3" id="searchFormDirectors">
+											<form method="post" action="{{ route('home') }}/{{ $lang }}/search" id="searchFormDirectors">
 												<input name="_token" type="hidden" value="{{ csrf_token() }}">
 												<div style="margin:20px 0px; display:inline-block; width:100%;">
 													<input type="text" id="searchKey" name="searchKey" value="{{ $varKeyword }}" class="searchText" placeholder='{{ __('lang.advancedSearchPlaceholder_managers_directors') }}'>
@@ -379,21 +338,20 @@
     function showHideAdvanceSearch() {
         if(document.getElementById("advanced-search-box").style.display=="none") {
             document.getElementById("advanced-search-box").style.display = "block";
-	   // document.getElementById("advance_search_submit").value= "1";
-            // document.getElementById("activeStatus").value= "1";
-             //document.getElementById("selectOrgtype").value= "1";
-             //document.getElementById("selectChamber").value= "1";
-             //document.getElementById("selectCPA").value= "1";
-              //document.getElementById("searchAddress").value= "1";
+	    document.getElementById("advance_search_submit").value= "1";
+             document.getElementById("activeStatus").value= "1";
+             document.getElementById("selectOrgtype").value= "1";
+             document.getElementById("selectChamber").value= "1";
+             document.getElementById("selectCPA").value= "1";
+              document.getElementById("searchAddress").value= "1";
             }
             else {
 		document.getElementById("advanced-search-box").style.display = "none";
-		//document.getElementById("activeStatus").value= "" ;
-		//document.getElementById("advance_search_submit").value= "";
-               // document.getElementById("selectOrgtype").value= "";
-                //document.getElementById("selectChamber").value= "";
-                //document.getElementById("selectCPA").value= "";
-                //document.getElementById("searchAddress").value= "";
+		document.getElementById("activeStatus").value= "" 
+		document.getElementById("advance_search_submit").value= "";
+                document.getElementById("selectOrgtype").value= "";
+                document.getElementById("selectChamber").value= "";
+                document.getElementById("searchAddress").value= "";
 	    }
    }
 </script>
@@ -402,8 +360,7 @@
 function getShowChambers($DbPath,$Db,$couchUser, $couchPass ){
     $couchUserPwd = $couchUser.':'.$couchPass;
     $ch = curl_init();
-    $url = $DbPath.$Db.'/'.'_all_docs?include_docs=true';     
-    
+    $url = $DbPath.$Db.'/'.'_all_docs?include_docs=true';                                                                                                                                                
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -424,27 +381,6 @@ function getShowCpa_l1($DbPath,$Db,$couchUser, $couchPass ){
     $couchUserPwd = $couchUser.':'.$couchPass;
     $ch = curl_init();
     $url = $DbPath.$Db.'/'.'_all_docs?include_docs=true';                                                                                                                                                
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_USERPWD, $couchUserPwd );
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-    'Content-type: application/json; charset=utf-8',
-    'Accept: */*'
-    ));
-
-    $response = curl_exec($ch); 
-    curl_close($ch);
-    $json = json_decode($response,true);
-    return $json;
-
-
-}
-function getShowMarkets($DbPath,$Db,$couchUser, $couchPass ){
-    $couchUserPwd = $couchUser.':'.$couchPass;
-    $ch = curl_init();
-    $url = $DbPath.$Db.'/'.'_all_docs?include_docs=true';    
-    
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

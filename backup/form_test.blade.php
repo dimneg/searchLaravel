@@ -73,9 +73,7 @@
 										<div class="tab-pane fade" id="1a">											
 									@endif
 										<div class="search">
-										@if($adv=="adv")	<form method="post" action="{{ route('home') }}/{{ $lang }}/search/adv" id="searchFormCompanies">
-                    @else             <form method="post" action="{{ route('home') }}/{{ $lang }}/search" id="searchFormCompanies">
-                    @endif
+											<form method="post" action="{{ route('home') }}/{{ $lang }}/search" id="searchFormCompanies">
 												<input name="_token" type="hidden" value="{{ csrf_token() }}">
 												<div style="margin:20px 0px; display:inline-block; width:100%;">
 													<input type="text" id="searchKey" name="searchKey" value="{{ $varKeyword }}" class="searchText" placeholder='{{ __('lang.advancedSearchPlaceholder') }}'>
@@ -83,61 +81,27 @@
 													<input type="submit" value='{{ __('lang.advancedSearchPlaceholderDatatables') }}' class="searchSubmit">
 													<div class="error" style="float:left; margin-top:5px;">{{ __('lang.field_required') }}</div>
 												</div>
-                        
-											<div style="width:100%;">  
-                  @if(isset($adv) && $isdirector==3)  @if($adv=='adv')                     
-                      @if(isset($returnsearch["search"]))
-                        <table onclick="cosr1('search',0)" id="purs" class="btn-primary fuse-ripple-ready text-auto" title="searchterm" data-toggle="modal" style="margin-left: 2px; float:left; border-radius: 5px; border: 8px solid black; border-color: #642D90; background-color: #bfbfbf; font-size:75%; height: 2.5rem; line-height: 1.2rem;">&nbsp;                         
-                            <tr>
-                              <th style="height:12px; color: #000000;">Κλειδί:</th>
-                              <th rowspan="2" style="height:12px; text-align: center; vertical-align: middle;"><img src="{{route('home')}}/images/x.png" width=20 height=20></th>
-                            </tr>
-                            <tr>
-                              <td style="height:8px; color: #000000;"> {{ $returnsearch["search"] }} </td>
-                            </tr>
-                          </table>
-                       <!--  </span>&nbsp; -->
+											@if(isset($returnsearch["search"]))
+                        <span id="purs" class="btn-primary fuse-ripple-ready text-auto" title="searchterm" data-toggle="modal" style="font-size:75%; height: 2.5rem; line-height: 2.5rem;">&nbsp;Κλειδί: {{ $returnsearch["search"] }}&nbsp;</span>&nbsp;
                         @endif
-                         
-                        @if(isset($returnsearch["search"]))                          
-                        <table onclick="cosr1('status',0)" id="purs" class="btn-primary fuse-ripple-ready text-auto" title="searchterm" data-toggle="modal" style="margin-left: 2px; float:left; border-radius: 5px; border: 8px solid black; border-color: #642D90; background-color: #bfbfbf; font-size:75%; height: 2.5rem; line-height: 1.2rem;">&nbsp;
-                            <tr>
-                              <th style="height:12px; color: #000000;"> Κατάσταση:</th>
-                              <th rowspan="2" style="height:12px; text-align: center; vertical-align: middle;"><img src="{{route('home')}}/images/x.png" width=20 height=20></th>
-                            </tr>
-                            <tr>
-                               <td style="height:8px; color: #000000;"> @if(isset($returnsearch["status"])) @if($returnsearch["status"][0]=="Active")  Ενεργή @else Όλες @endif @else Όλες @endif </td>
-                            </tr>
-                        </table>
+                        @if(isset($returnsearch["status"])) 
+                         @if($returnsearch["status"][0]=="Active") 
+                        <span id="purs" class="btn-primary fuse-ripple-ready text-auto" title="searchterm" data-toggle="modal" style="font-size:75%; height: 2.5rem; line-height: 2.5rem;">&nbsp;Κατάσταση: Ενεργη&nbsp; </span>&nbsp;
+                         @endif
                         @endif
-                        
                         @if(isset($returnsearch["org"])) 
                          @foreach($returnsearch["org"] as $k=>$v) 
-                        <table onclick="cosr1('org','{{$v}}')" id="purs" class="btn-primary fuse-ripple-ready text-auto" title="searchterm" data-toggle="modal" style="margin-left: 2px; float:left; border-radius: 5px; border: 8px solid black; border-color: #642D90; background-color: #bfbfbf; font-size:75%; height: 2.5rem; line-height: 1.2rem;">&nbsp;
-                            <tr>
-                              <th style="height:12px; color: #000000;"> Εταιρικός Τύπος: </th>
-                              <th rowspan="2" style="height:12px; text-align: center; vertical-align: middle;"><img src="{{route('home')}}/images/x.png" width=20 height=20></th>
-                            </tr>
-                            <tr>
-                               <td style="height:8px; color: #000000;"> {{__('lang.advancedSearchCritOrgtype_'.$v) }} </td>
-                            </tr>
-                          </table>
+                        <span id="purs" class="btn-primary fuse-ripple-ready text-auto" title="searchterm" data-toggle="modal" style="font-size:75%; height: 2.5rem; line-height: 2.5rem;"> &nbsp;Εταιρικός Τύπος: {{__('lang.advancedSearchCritOrgtype_'.$v) }} &nbsp;</span>&nbsp;
                          @endforeach
                         @endif
-                        
                          @if(isset($returnsearch["cpa"])) 
                          @foreach($returnsearch["cpa"] as $k=>$v) 
-                        <table onclick="cosr1('cpa',0)" id="purs" class="btn-primary fuse-ripple-ready text-auto" title="searchterm" data-toggle="modal" style="margin-left: 2px; float:left; border-radius: 5px; border: 8px solid black; border-color: #642D90; background-color: #bfbfbf; font-size:75%; height: 2.5rem; line-height: 1.2rem;">&nbsp;
-                            <tr>
-                              <th style="height:12px; color: #000000;"> 
+                        <span id="purs" class=" btn-primary fuse-ripple-ready text-auto" title="searchterm" data-toggle="modal" style="font-size:75%; height: 2.5rem; line-height: 2.5rem;"> 
                         <?php
                                                                                                                                            $cpa_l1_Array =  getShowCpa_l1(config('search.DbPath'),config('search.cpa_l1_CouchDB'),config('search.couchUser'), config('search.couchPass')); 
                                                                                                                                            if (isset($cpa_l1_Array ['rows'] )){
-                                                                                                                                                foreach ($cpa_l1_Array ['rows'] as $cpa_l1){ if (isset($cpa_l1['doc']['title'])){ if($cpa_l1['doc']['code']==$v) { ?>  Δραστηριότητα (ΚΑΔ):</th><th rowspan="2" style="height:12px; text-align: center; vertical-align: middle;"><img src="{{route('home')}}/images/x.png" width=20 height=20></th>
-                            </tr>
-                            <tr>
-                               <td style="height:8px; color: #000000;">
-                                                                                                                                                  <?= mb_substr($cpa_l1['doc']['title'], 0,75, "utf-8")?></td></tr></table>
+                                                                                                                                                foreach ($cpa_l1_Array ['rows'] as $cpa_l1){ if (isset($cpa_l1['doc']['title'])){ if($cpa_l1['doc']['code']==$v) { ?>  &nbsp;Δραστηριότητα(ΚΑΔ):
+                                                                                                                                                  <?= mb_substr($cpa_l1['doc']['title'], 0,75, "utf-8")?>&nbsp; 
                                                                                                                                            <?php } }
                                                                                                                                            } 
                                                                                                                                            }
@@ -145,151 +109,21 @@
                                                                                                                                             
                                                                                                                                             
 
-                                                                                                                                        ?>
+                                                                                                                                        ?></span>&nbsp;
                          @endforeach
                         @endif
-                        
                         @if(isset($returnsearch["chamber"])) 
                          @foreach($returnsearch["chamber"] as $k=>$v) 
-                          <table onclick="cosr1('chamber',0)" id="purs" class="btn-primary fuse-ripple-ready text-auto" title="searchterm" data-toggle="modal" style="margin-left: 2px; float:left; border-radius: 5px; border: 8px solid black; border-color: #642D90; background-color: #bfbfbf; font-size:75%; height: 2.5rem; line-height: 1.2rem;">&nbsp;
-                            <tr>
-                              <th style="height:12px; color: #000000;"> Επιμελητήριο: </th>
-                              <th rowspan="2" style="height:12px; text-align: center; vertical-align: middle;"><img src="{{route('home')}}/images/x.png" width=20 height=20></th>
-                            </tr>
-                            <tr>
-                               <td style="height:8px; color: #000000;">{{ $v }}</td>
-                            </tr>
-                          </table>
-                         @endforeach
-                        @endif                        
-
-                        @if(isset($returnsearch["address"])) 
-                         @foreach($returnsearch["address"] as $k=>$v) 
-                         <table onclick="cosr1('address',0)" id="purs" class="btn-primary fuse-ripple-ready text-auto" title="searchterm" data-toggle="modal" style="margin-left: 2px; float:left; border-radius: 5px; border: 8px solid black; border-color: #642D90; background-color: #bfbfbf; font-size:75%; height: 2.5rem; line-height: 1.2rem;">&nbsp;
-                            <tr>
-                              <th style="height:12px; color: #000000;">Αναζήτηση σε:</th>
-                              <th rowspan="2" style="height:12px; text-align: center; vertical-align: middle;"><img src="{{route('home')}}/images/x.png" width=20 height=20></th>
-                            </tr>
-                            <tr>
-                               <td style="height:8px; color: #000000;"> @if($v=="address") Διεύθυνση @elseif($v=="basic") Μόνο βασικά στοιχεία @elseif($v=="tk") Τ.Κ. @elseif($v=="region") Περιοχή @endif </td>
-                            </tr>
-                          </table>
+                         <span id="purs" class="btn-primary fuse-ripple-ready text-auto" title="searchterm" data-toggle="modal" style="font-size:75%; height: 2.5rem; line-height: 2.5rem;">&nbsp;Επιμελητήριο:  
+                        {{ $v }}&nbsp;</span>&nbsp;
                          @endforeach
                         @endif
-                      </div>
-                
-
- <script type="text/javascript">
-  function url_redirect(options){
-    // console.log(options);
-    // alert(options);
-
-       var $form = $("<form />");
-       
-       $form.attr("action",options.url);
-       $form.attr("method",options.method);
-       
-       $form.append('<input type="hidden" name="isdirector" value="3" />');
-
-       for (var data in options.data) {
-         if(data=="activeStatus[]" || data=="selectChamber[]" || data=="selectCPA[]") {
-             $form.append('<select type="hidden" id="activeStatus"  name="'+data+'" tabindex="1"><option value="'+options.data[data]+'">'+options.data[data]+'</option></select>');
-         } else {
-          if(data=="tmp") {
-            for (var data2 in options.data.tmp) {
-               $form.append('<input type="hidden" name="'+data2+'" value="'+options.data.tmp[data2]+'" />');
-            }
-          } else $form.append('<input type="hidden" name="'+data+'" value="'+options.data[data]+'" />');
-           }
-       }
-        
-       $("body").append($form);
-       $form.submit();
-  }
-
-  function cosr1(dt,dt2) {
-    switch(dt) {
-      case "search":
-                    $(function(){
-                    /*jquery statements */      
-                    url_redirect({url: "{{ route('home') }}/{{ $lang }}/search/{{$adv}}",
-                      method: "post",
-                      data: {"_token":"{{ csrf_token() }}", "searchKey":"{{$returnsearch["search"]}}", @if(isset($returnsearch["org"])) @foreach($returnsearch["org"] as $k=>$v) "selectOrgtype{{$v}}":"{{$v}}", @endforeach @endif @if(isset($returnsearch["status"])) "activeStatus[]": "{{$returnsearch["status"][0]}}", @endif @if(isset($returnsearch["chamber"])) "selectChamber[]": "{{$returnsearch["chamber"][0]}}", @endif @if(isset($returnsearch["cpa"])) "selectCPA[]": "{{$returnsearch["cpa"][0]}}", @endif @if(isset($returnsearch["address"])) "searchAddress[]": "{{$returnsearch["address"][0]}}", @endif }
-                     });
-                   }); 
-                   break;
-       case "status":
-                    $(function(){
-                    /*jquery statements */      
-                    url_redirect({url: "{{ route('home') }}/{{ $lang }}/search/{{$adv}}",
-                      method: "post",
-                      data: {"_token":"{{ csrf_token() }}", "searchKey":"{{$returnsearch["search"]}}", @if(isset($returnsearch["org"])) @foreach($returnsearch["org"] as $k=>$v) "selectOrgtype{{$v}}":"{{$v}}", @endforeach @endif @if(isset($returnsearch["status"])) "activeStatus[]": "Όλα", @endif @if(isset($returnsearch["chamber"])) "selectChamber[]": "{{$returnsearch["chamber"][0]}}", @endif @if(isset($returnsearch["cpa"])) "selectCPA[]": "{{$returnsearch["cpa"][0]}}", @endif @if(isset($returnsearch["address"])) "searchAddress[]": "{{$returnsearch["address"][0]}}", @endif}
-                     });
-                   }); 
-                   break;
-         case "org":
-                    $(function(){
-                    /*jquery statements */  
-                   var tmp={};
-                    @if(isset($returnsearch["org"])) 
-                      @foreach($returnsearch["org"] as $k=>$v)                             
-                        if("{{$v}}"!=dt2) { 
-                           tmp["selectOrgtype{{$v}}"]="{{$v}}";                       
-                        } 
-                      @endforeach 
-                    @endif 
-                    if(tmp==null) tmp["selectOrgtypeUKN"]="UKN"; 
-                    
-                    url_redirect({url: "{{ route('home') }}/{{ $lang }}/search/{{$adv}}",
-                      method: "post",
-                      data: {"_token":"{{ csrf_token() }}", "searchKey":"{{$returnsearch["search"]}}", tmp, @if(isset($returnsearch["status"])) "activeStatus[]": "{{$returnsearch["status"][0]}}", @endif @if(isset($returnsearch["chamber"])) "selectChamber[]": "{{$returnsearch["chamber"][0]}}", @endif @if(isset($returnsearch["cpa"])) "selectCPA[]": "{{$returnsearch["cpa"][0]}}", @endif @if(isset($returnsearch["address"])) "searchAddress[]": "{{$returnsearch["address"][0]}}", @endif}
-                     });
-                   }); 
-                   break;
-       case "chamber":
-                    $(function(){
-                    /*jquery statements */      
-                    url_redirect({url: "{{ route('home') }}/{{ $lang }}/search/{{$adv}}",
-                      method: "post",
-                      data: {"_token":"{{ csrf_token() }}", "searchKey":"{{$returnsearch["search"]}}", @if(isset($returnsearch["org"])) @foreach($returnsearch["org"] as $k=>$v) "selectOrgtype{{$v}}":"{{$v}}", @endforeach @endif @if(isset($returnsearch["status"])) "activeStatus[]": "{{$returnsearch["status"][0]}}", @endif "selectChamber[]": "Όλα", @if(isset($returnsearch["cpa"])) "selectCPA[]": "{{$returnsearch["cpa"][0]}}", @endif @if(isset($returnsearch["address"])) "searchAddress[]": "{{$returnsearch["address"][0]}}", @endif}
-                     });
-                   }); 
-                   break;
-      case "cpa":
-                    $(function(){
-                    /*jquery statements */      
-                    url_redirect({url: "{{ route('home') }}/{{ $lang }}/search/{{$adv}}",
-                      method: "post",
-                      data: {"_token":"{{ csrf_token() }}", "searchKey":"{{$returnsearch["search"]}}", @if(isset($returnsearch["org"])) @foreach($returnsearch["org"] as $k=>$v) "selectOrgtype{{$v}}":"{{$v}}", @endforeach @endif @if(isset($returnsearch["status"])) "activeStatus[]": "{{$returnsearch["status"][0]}}", @endif  "selectCPA[]": "Όλα", @if(isset($returnsearch["chamber"])) "selectChamber[]": "{{$returnsearch["chamber"][0]}}", @endif @if(isset($returnsearch["address"])) "searchAddress[]": "{{$returnsearch["address"][0]}}", @endif }
-                     });
-                   }); 
-                   break;   
-       case "address":
-                    $(function(){
-                    /*jquery statements */      
-                    url_redirect({url: "{{ route('home') }}/{{ $lang }}/search/{{$adv}}",
-                      method: "post",
-                      data: {"_token":"{{ csrf_token() }}", "searchKey":"{{$returnsearch["search"]}}", @if(isset($returnsearch["org"])) @foreach($returnsearch["org"] as $k=>$v) "selectOrgtype{{$v}}":"{{$v}}", @endforeach @endif @if(isset($returnsearch["status"])) "activeStatus[]": "{{$returnsearch["status"][0]}}", @endif @if(isset($returnsearch["chamber"])) "selectChamber[]": "{{$returnsearch["chamber"][0]}}", @endif @if(isset($returnsearch["cpa"])) "selectCPA[]": "{{$returnsearch["cpa"][0]}}", @endif "searchAddress[]": "basic", }
-                     });
-                   }); 
-                   break;                       
-      default:
-                   break;
-    }
-   }
-
-</script>
- @endif @endif                       
-                  @if(isset($adv)) @if($adv=="adv")  <div class="advanced_search"  onClick="showHideAdvanceSearch()" style="margin-top: 90px;">{{ __('lang.advancedSearchBtn') }}</div> @endif @endif
-
-
-
-
-												
+                        <br><br>   
+												<span class="advanced_search"  onClick="showHideAdvanceSearch()">{{ __('lang.advancedSearchBtn') }}</span> 
                                                                                               <!--  <span class="advanced_search" style="display:none;" onClick="showHideAdvanceSearch()">{{ __('lang.advancedSearchBtn') }}</span> -->
                                                                                                  <div id="advanced-search-box" style="text-align: left; <?php if(empty($advance_search_submit)) { ?>display:none;<?php } ?>"> <!--<style="display:none;"-->
 
-                                                                                                   <form id="selectOrgtype" name="selectOrgtype" method="get" action="{{ route('home') }}/{{ $lang }}/search/adv">
+                                                                                                   <form id="selectOrgtype" name="selectOrgtype" method="get" action="{{ route('home') }}/{{ $lang }}/search">
                                                                                                     
 
                                                                                                     <label><span style="font-weight: bold;">{{ __('lang.advancedSearchCritOrgtype') }}:</span></label>&nbsp;<br>
@@ -546,16 +380,14 @@
                     </div>								
 									</div>
                  
-</div>
+
 									@if ($isdirector == 1)
 										<div class="tab-pane fade show active" id="2a">
 									@else 
 										<div class="tab-pane fade" id="2a">											
 									@endif											
 										<div class="search">
-											@if($adv=="adv") <form method="post" action="{{ route('home') }}/{{ $lang }}/search/adv" id="searchFormDirectors">
-                      @else            <form method="post" action="{{ route('home') }}/{{ $lang }}/search" id="searchFormDirectors">
-                      @endif
+											<form method="post" action="{{ route('home') }}/{{ $lang }}/search" id="searchFormDirectors">
 												<input name="_token" type="hidden" value="{{ csrf_token() }}">
 												<div style="margin:20px 0px; display:inline-block; width:100%;">
 													<input type="text" id="searchKey" name="searchKey" value="{{ $varKeyword }}" class="searchText" placeholder='{{ __('lang.advancedSearchPlaceholder_managers_directors') }}'>
@@ -590,7 +422,7 @@
 																"ordering": true,
 																"language": {   "sSearch": "<i class='icon icon-magnify'></i>", 
 																				searchPlaceholder: "{{ __('lang.advancedSearchPlaceholderDatatables') }} ",
-																				"lengthMenu": "{{ __('lang.advancedSearchResults_lengthMenu') }}",
+																				"lengthMenu": "{{ __('lang.advancedSearchResults_lengthMenu') }} ",
 																				"paginate": { "previous": "<", "next": ">" },
 																				"info": "_START_ - _END_ from _TOTAL_",
 																				"sInfoEmpty": "0 - _END_ from _TOTAL_",
@@ -626,49 +458,27 @@
  </script>
 <script type="text/javascript">
                             $('#searchResults').DataTable({
-                                "dom": '<"top"if>rt<"bottom"lp><"clear">',
-                                "aaSorting": [[ 1, "desc" ]],
-                                "responsive": true,                           
-                                "searching": true,
-                                "lengthChange": true,                           
+                            "aaSorting": [[ 1, "desc" ]],
+
+                                responsive: true,                 
+                                "lengthChange": true,
                                 "paging": true,
                                 "pagingType": "simple",
                                 "info": true,
+                                
                                 //"ordering": true,
                                 "language": {   "sSearch": "<i class='icon icon-magnify'></i>", 
-                                        "searchPlaceholder": "{{ __('lang.searchLabel') }}",
-                                        "lengthMenu": "{{ __('lang.records_per_page1') }} _MENU_ {{ __('lang.records_per_page2') }}",
+                                        searchPlaceholder: "{{ __('lang.advancedSearchPlaceholderDatatables') }}",
+                                        "lengthMenu": "{{ __('lang.advancedSearchResults_lengthMenu') }}",
                                         "paginate": { "previous": "<", "next": ">" },
-                                        "info": "_START_ - _END_ {{ __('lang.of') }} _TOTAL_",
-                                        "sInfoEmpty": "_START_ - _END_ {{ __('lang.of') }} _TOTAL_",
+                                        "info": "_START_ - _END_ από _TOTAL_",
+                                        "sInfoEmpty": "0 - _END_ από _TOTAL_",
                                         "emptyTable": "{{ __('lang.empty_table') }}",
                                         "decimal": ".",
-                                              "thousands": "."                          
-                                      }, 
-                                "aoColumnDefs": [{ "bVisible": false, "aTargets": [ 1 ] }] 
-
-
-                            // "aaSorting": [[ 1, "desc" ]],
-
-                            //     "responsive": true,                 
-                            //     "lengthChange": true,
-                            //     "paging": true,
-                            //     "pagingType": "simple",
-                            //     "info": true,
+                                              "thousands": ""                         
+                                      },
                                 
-                            //     //"ordering": true,
-                            //     "language": {   "sSearch": "<i class='icon icon-magnify'></i>", 
-                            //             searchPlaceholder: "{{ __('lang.advancedSearchPlaceholderDatatables') }}",
-                            //             "info": "{{ __('lang.records_per_page1') }} _MENU_ {{ __('lang.records_per_page2') }}",
-                            //             "paginate": { "previous": "<", "next": ">" },
-                            //             "lengthMenu": "_START_ - _END_ από _TOTAL_",
-                            //             "sInfoEmpty": "0 - _END_ από _TOTAL_",
-                            //             "emptyTable": "{{ __('lang.empty_table') }}",
-                            //             "decimal": ".",
-                            //                   "thousands": ""                         
-                            //           },
-                                
-                            //     "aoColumnDefs": [{ "bVisible": false, "aTargets": [ 1 ] }]
+                                "aoColumnDefs": [{ "bVisible": false, "aTargets": [ 1 ] }]
                             });                         
  </script>
 	

@@ -209,149 +209,11 @@ return $translated;
     return $word;
     }
     
-    
-    function prepareExactKeyword_new($word){
+
+   function prepareExactKeyword($word){
         $word = ltrim($word);
-        $tokens = explode(' ', $word);
+        $words = explode(' ', $word);
         $wordArray = array();
-         if (count($tokens) > 1) {
-             $t1=' ';
-             $t2=' ';
-             $t12=' ';
-             $newWord ='';
-             $i = 0;
-             $len = count($tokens);
-             foreach($tokens as $w) {
-                  if ($i == 0)  {	
-                       if (mb_strlen($w, 'utf-8') > 2) { 	
-                           $t1 = $w;
-                       }
-                       $w='"'.$w.'+';	
-                  }
-                  else {
-                       if (($i > 0) && ($i < ($len-1))) {
-                            if ($i == 1) {
-                                 if	(mb_strlen($w, 'utf-8') >2 ){ 
-                                     $t2 = $w;	
-                                     $w = $w.'+';	
-                                 }
-                                  
-                            }
-                       }
-                       else {
-                            if ($i == ($len-1) ){
-                                if ($i == 1) {
-                                    if	(mb_strlen($w, 'utf-8') >2 ){ 
-                                          $t2 = $w;	
-                                          $w=$w.'"';
-                                    }
-                                   
-                                }
-                                	
-                            }
-                            $newWord.= $w; 
-                             $i++;	
-                       }
-                  }
-             }
-             $t12= '"'.$t1."+".$t2.'"';
-             return array($t1,$t2,$t12,$newWord);
-         }
-         else {
-             return array($word ,'',$word ,$word );
-         }
-        
-    }
-
-   function prepareExactKeyword_test($word){
-        $word = ltrim($word);
-        $words = explode(' ', $word);
-        
-        if (count($words) > 1) {
-            $t1 ='';
-            $t2 = '';
-            $t12 = $word;
-            $newWord = '';
-            $i = 0;
-            $len = count($words);
-            foreach($words as $w) {		
-               if ($i == 0)  {	
-                   if	(mb_strlen($w, 'utf-8') > 2) { 			   
-			$t1 = $w;
-                        $wt= '"'.$w.'+';     
-                        $newWord .=$wt; 
-		    } 
-                    ELSE {
-                        $t1 = $word;
-                        $wt= '"'.$w.'+'; 
-                        $newWord .=$wt; 
-                    }
-					 
-               }
-	       else {
-                   if (($i > 0) && ($i < ($len-1))) {          	
-		        if ($i == 1) 	 {                  
-		           if	(mb_strlen($w, 'utf-8') >2 ){ 
-				       $t2 = $w;	
-                                       $wt = $w.'+';
-                                       $newWord .=$wt; 
-                            }	
-                            ELSE {
-                                $t2 = $word;	
-                                $wt = $w.'+';
-                                $newWord .=$wt; 
-                            }
-	               }               			   
-			  
-	           }
-                   else {
-                        if ($i == ($len-1) ){
-                              if ($i == 1) {
-                                   if	(mb_strlen($w, 'utf-8') >2 ){
-                                        $t2 = $w;
-                                        $wt = $w.'"';	
-                                        $newWord .=$wt; 
-                                   }
-                                   else {
-                                       $t2 = $word;	
-                                       $wt = $w.'"';	
-                                       $newWord .=$wt; 
-                                   }
-                              }
-                        }	
-                   }
-                   
-               }
-               $i++;	
-            }
-            if (isset($t1) && $t1!==''){
-                if (isset($t2) && $t2!==''){
-                    $t12= '"'.$t1."+".$t2.'"';
-                }
-                
-            }
-            else {
-                  if (isset($t2) && $t2!==''){
-                      $t12= '"'.$t2.'"';
-                  }
-                  else {
-                      $t12 =$word;
-                  }
-            }
-			      
-           $t12= '"'.$t1."+".$t2.'"';
-          return array($t1,$t2,$t12,$newWord);
-         #   return array($newWord,$newWord,$newWord,$newWord);
-}
-    else {
-       return array($word ,'',$word ,$word );
-    }
-
-}
-function prepareExactKeyword($word){
-        $word = ltrim($word);
-        $words = explode(' ', $word);
-        
         if (count($words) >1) {
             $t1=' ';
             $t2=' ';
@@ -361,16 +223,17 @@ function prepareExactKeyword($word){
             $len=count($words);
             foreach($words as $w) {		
                if ($i == 0)  {	
-                   if	(mb_strlen($w, 'utf-8') > 2) { 			   
+                   if	(mb_strlen($w, 'utf-8') >2) { 			   
 			$t1 = $w;
 		    }
 			$w='"'.$w.'+';			 
                }
 	       else
-	            if (($i > 0) && ($i < ($len-1))) {             	
+			   if (($i > 0) && ($i < ($len-1)))
+               { 	
 			       
-                         if ($i == 1) 	 {
-                  
+                   if ($i == 1) 	
+                   {
 				      if	(mb_strlen($w, 'utf-8') >2 ){ 
 				      $t2 = $w;	
                       }					 
@@ -384,10 +247,7 @@ function prepareExactKeyword($word){
 			       
 			       if ($i == 1) 
 				   {
-                                    if	(mb_strlen($w, 'utf-8') >2 ) {
-                                        $t2 = $w;	 
-                                    }
-				   				
+				    $t2 = $w;					
 				   }	
                   $w=$w.'"';				   
 			       

@@ -23,7 +23,7 @@ class showResults {
         
        
         #$source = ' ';
-        #$basicUrl = $this->getBasicUrl();
+        $basicUrl = $this->getBasicUrl();
         #$i = 0;
      
         #$uniqueResults = array_filter($uniqueResults);
@@ -94,10 +94,10 @@ class showResults {
                             $uniqueResults[$i]['address'] = $checkData->transliterate($uniqueResults[$i]['address']);
                             $uniqueResults[$i]['city'] = $checkData->transliterate($uniqueResults[$i]['city']);
                             if (isset($uniqueResults[$i]['s_mgmtCompanyName'])){
-                               $mgmtCompanyName = $checkData->transliterate($uniqueResults[$i]['s_mgmtCompanyName']);
+                               $mgmtCompanyName=$checkData->transliterate($uniqueResults[$i]['s_mgmtCompanyName']);
                             }
                             if (isset($uniqueResults[$i]['s_ownCompanyName'])){
-                               $ownCompanyName = $checkData->transliterate($uniqueResults[$i]['s_ownCompanyName']);
+                               $ownCompanyName=$checkData->transliterate($uniqueResults[$i]['s_ownCompanyName']);
                             }
 
 
@@ -162,9 +162,7 @@ class showResults {
                                     $restText = __('lang.advancedSearchPlus1').' '.$rest.' '.__('lang.advancedSearchPlus2');
                                 }
                                 #$mgmtCompanyLink= 'http://dashboard.linkedbusiness.gr/gr/company/'.$uniqueResults[$i]['s_mgmtCompanyLink'].'/basic?s=1';
-                               # $mgmtCompanyLink= $basicUrl.$lang.'/company/'.$uniqueResults[$i]['s_mgmtCompanyLink'].'/basic?s=1';
-                                 $mgmtCompanyLink = $this->tempFixPersonCompany( $uniqueResults[$i]['s_mgmtCompanyLink'].'/basic?s=1');
-                               # $uri .
+                                $mgmtCompanyLink= $basicUrl.$lang.'/company/'.$uniqueResults[$i]['s_mgmtCompanyLink'].'/basic?s=1';
                                # $mgmtCompanyName=$uniqueResults[$i]['s_mgmtCompanyName'];
                                # echo 'Διαχειριστής: '.$this->hide_not_avail($uniqueResults[$i]['s_mgmtCompanyName']).$restText .'</br>';
                                 #$table_str .= __('lang.advancedSearchManages').': ';
@@ -174,8 +172,7 @@ class showResults {
                                 $table_str .=  $restText. '</br>';
                             }
                              if ($uniqueResults[$i]['ownershipCnt']>0){
-                                # $ownCompanyLink= $basicUrl.$lang.'/company/'.$uniqueResults[$i]['s_ownCompanyLink'].'/basic?s=1';
-                                 $ownCompanyLink=  $this->tempFixPersonCompany($uniqueResults[$i]['s_ownCompanyLink'].'/basic?s=1');
+                                 $ownCompanyLink= $basicUrl.$lang.'/company/'.$uniqueResults[$i]['s_ownCompanyLink'].'/basic?s=1';
                                  #$ownCompanyName=$uniqueResults[$i]['s_ownCompanyName'];
                                  $rest = $uniqueResults[$i]['ownershipCnt'] - 1;
                                  $restText ='';
@@ -193,9 +190,8 @@ class showResults {
                         }
                         else {
                             if ($uniqueResults[$i]['db'] === 'lb_mp' || $uniqueResults[$i]['db'] === 'lb_mp_2'){
-                                #$mgmtCompanyLink= $basicUrl.'gr/company/'.$uniqueResults[$i]['s_mgmtCompanyLink'].'/basic?s=1';
-                                $mgmtCompanyLink=  $this->tempFixPersonCompany($uniqueResults[$i]['s_mgmtCompanyLink'].'/basic?s=1');
-                                $mgmtCompanyName = $uniqueResults[$i]['s_mgmtCompanyName'];
+                                $mgmtCompanyLink= $basicUrl.'gr/company/'.$uniqueResults[$i]['s_mgmtCompanyLink'].'/basic?s=1';
+                                $mgmtCompanyName=$uniqueResults[$i]['s_mgmtCompanyName'];
                                 
                                 $labelManager= __('lang.advancedSearchManages');
                                 $table_str .=  " <font  color='#006621' style='font-size: 0.82em'>$labelManager : </font> ";  
@@ -210,79 +206,6 @@ class showResults {
 
                    
                         }
-                        
-                         //....show diaugeia...\\
-                 if ($uniqueResults[$i]['dataDiaugeia'] == 1 ){
-                     $table_str .= '<div>';
-                     $source = __('lang.transparencyportal');
-                     $property = __('lang.seller');
-                     $table_str .=  " <font  color='#006621' style='font-size: 0.82em'>$source</font> ";  
-                     #$table_str .= " <font color='FFA500' size='1'>$property</font> "; 
-                     $table_str .= '&nbsp';
-                     #$table_str .= __('lang.payments_lbl');
-                     $table_str .= "Εγκρίσεις";
-                     $table_str .= ':';
-                     $table_str .= '&nbsp';
-                    # if (isset($uniqueResults[$i]['spend0']) && isset($uniqueResults[$i]['spend1']) && isset($uniqueResults[$i]['spend2'])){
-                    if (isset($uniqueResults[$i]['diavgeia_approvals_amount']) ){
-                        # $sumSpend = $this->fromTextToNumber($uniqueResults[$i]['spend0']) + $this->fromTextToNumber($uniqueResults[$i]['spend1']) + $this->fromTextToNumber($uniqueResults[$i]['spend2'])  ;
-                         $table_str .=  ' '.$uniqueResults[$i]['diavgeia_approvals_amount'].'';
-                     }
-                   #  if (isset($uniqueResults[$i]['spendCnt0']) && isset($uniqueResults[$i]['spendCnt1']) && isset($uniqueResults[$i]['spendCnt2'])){
-                    #     $table_str .=  ' ('.round(($uniqueResults[$i]['spendCnt0']+$uniqueResults[$i]['spendCnt1']+$uniqueResults[$i]['spendCnt2']),0).') '; 
-                     #}
-                     if (isset($uniqueResults[$i]['diavgeia_approvals_cnt']) ){
-                        $table_str .=  ' ('.$uniqueResults[$i]['diavgeia_approvals_cnt'].') '; 
-                     }
-                     
-                      $table_str .= __('lang.payments_lbl');
-                      $table_str .= ':';
-                      $table_str .= '&nbsp';
-                      if (isset($uniqueResults[$i]['diavgeia_payments_amount']) ){
-                        $table_str .=  ' '.$uniqueResults[$i]['diavgeia_payments_amount'].'';
-                      }
-                      if (isset($uniqueResults[$i]['diavgeia_payments_cnt']) ){
-                         $table_str .=  ' ('.$uniqueResults[$i]['diavgeia_payments_cnt'].') '; 
-                     }
-                     
-                     if (isset($uniqueResults[$i]['diavgeia_last_update'])){
-                        $table_str .=   __('lang.advancedSearchResults_date_till');	
-                        $table_str .=   $this->convertDate($uniqueResults[$i]['diavgeia_last_update']);
-                        $table_str .= ']</br>';
-                    }
-                  $table_str .= '</div>';   
-                 }
-                 
-                 
-                
-                  //...show espa....\\
-                 if ($uniqueResults[$i]['dataEspa'] == 1 && isset($uniqueResults[$i]['espa_contracts_amount']) && isset($uniqueResults[$i]['espa_contracts_cnt'])){
-                     $table_str .= '<div>';  
-                     $source = __('lang.nsrfgr_lbl');
-                     $property = __('lang.espa_beneficiary');
-                     $table_str .=  " <font  color='#006621' style='font-size: 0.82em'>$source</font> ";
-                     $table_str .= '&nbsp';
-                    # $table_str .=  " <font color='#FFA500' size='1'>$property</font> "; 
-                     $table_str .=  __('lang.contracts_lbl');
-                     $table_str .= ':';
-                     $table_str .= '&nbsp';
-                     $table_str .=  ''.$uniqueResults[$i]['espa_contracts_amount'].'';
-                     $table_str .=   ' ('.round(($uniqueResults[$i]['espa_contracts_cnt']),0).') ';
-                    # $table_str .=  ''.$uniqueResults[$i]['SubsContractsAmount'].'';
-                    # $table_str .=   ' ('.round(($uniqueResults[$i]['SubsContractsCounter']),0).') ';
-                    # $table_str .=  __('lang.payments_lbl');
-                    # $table_str .= ':';
-                    # $table_str .= '&nbsp';
-                    # $table_str .= ''.$uniqueResults[$i]['SubsPaymentsAmount'].'';
-                    # $table_str .=  ' ('.round(($uniqueResults[$i]['SubsPaymentsCounter']),0).') ';
-                     if (isset($uniqueResults[$i]['espa_last_update'])){
-                        $table_str .=   __('lang.advancedSearchResults_date_till');	
-                        $table_str .=   $uniqueResults[$i]['espa_last_update'];
-                        $table_str .= ']</br>';
-                    }
-                     $table_str .= '</div>';  
-                    #$table_str .=   ' &nbsp [έως '.$this->convertDate($uniqueResults[$i]['espa_lastUpdate']).']</br>';
-                 }
                         $table_str .= "</td>";
 
                         $table_str .= "<td style=\" text-align:left; border-left: 0px solid #ccc; font-size:15px; padding-right:0px;  width:80px;\">";
@@ -462,42 +385,63 @@ class showResults {
                      $table_str .=  " <font  color='#006621' style='font-size: 0.82em'>$source</font> ";  
                      #$table_str .= " <font color='FFA500' size='1'>$property</font> "; 
                      $table_str .= '&nbsp';
-                     #$table_str .= __('lang.payments_lbl');
-                     $table_str .= "Εγκρίσεις";
+                     $table_str .= __('lang.payments_lbl');
                      $table_str .= ':';
                      $table_str .= '&nbsp';
-                    # if (isset($uniqueResults[$i]['spend0']) && isset($uniqueResults[$i]['spend1']) && isset($uniqueResults[$i]['spend2'])){
-                    if (isset($uniqueResults[$i]['diavgeia_approvals_amount']) ){
-                        # $sumSpend = $this->fromTextToNumber($uniqueResults[$i]['spend0']) + $this->fromTextToNumber($uniqueResults[$i]['spend1']) + $this->fromTextToNumber($uniqueResults[$i]['spend2'])  ;
-                         $table_str .=  ' '.$uniqueResults[$i]['diavgeia_approvals_amount'].'';
+                     if (isset($uniqueResults[$i]['spend0']) && isset($uniqueResults[$i]['spend1']) && isset($uniqueResults[$i]['spend2'])){
+                         $sumSpend = $this->fromTextToNumber($uniqueResults[$i]['spend0']) + $this->fromTextToNumber($uniqueResults[$i]['spend1']) + $this->fromTextToNumber($uniqueResults[$i]['spend2'])  ;
+                         $table_str .=  ' '.$this->fromNumberToText($sumSpend,'€').'';
                      }
-                   #  if (isset($uniqueResults[$i]['spendCnt0']) && isset($uniqueResults[$i]['spendCnt1']) && isset($uniqueResults[$i]['spendCnt2'])){
-                    #     $table_str .=  ' ('.round(($uniqueResults[$i]['spendCnt0']+$uniqueResults[$i]['spendCnt1']+$uniqueResults[$i]['spendCnt2']),0).') '; 
-                     #}
-                     if (isset($uniqueResults[$i]['diavgeia_approvals_cnt']) ){
-                        $table_str .=  ' ('.$uniqueResults[$i]['diavgeia_approvals_cnt'].') '; 
+                     if (isset($uniqueResults[$i]['spendCnt0']) && isset($uniqueResults[$i]['spendCnt1']) && isset($uniqueResults[$i]['spendCnt2'])){
+                         $table_str .=  ' ('.round(($uniqueResults[$i]['spendCnt0']+$uniqueResults[$i]['spendCnt1']+$uniqueResults[$i]['spendCnt2']),0).') '; 
                      }
                      
-                      $table_str .= __('lang.payments_lbl');
+                      $table_str .= __('lang.advancedSearchResults_awards');
                       $table_str .= ':';
                       $table_str .= '&nbsp';
-                      if (isset($uniqueResults[$i]['diavgeia_payments_amount']) ){
-                        $table_str .=  ' '.$uniqueResults[$i]['diavgeia_payments_amount'].'';
+                      if (isset($uniqueResults[$i]['award0']) && isset($uniqueResults[$i]['award1']) && isset($uniqueResults[$i]['award2'])){
+                          $sumAward = $this->fromTextToNumber($uniqueResults[$i]['award0']) + $this->fromTextToNumber($uniqueResults[$i]['award1']) + $this->fromTextToNumber($uniqueResults[$i]['award2'])  ;
+                          $table_str .=   ' '.$this->fromNumberToText($sumAward,'€').'';
                       }
-                      if (isset($uniqueResults[$i]['diavgeia_payments_cnt']) ){
-                         $table_str .=  ' ('.$uniqueResults[$i]['diavgeia_payments_cnt'].') '; 
-                     }
-                     
-                     if (isset($uniqueResults[$i]['diavgeia_last_update'])){
-                        $table_str .=   __('lang.advancedSearchResults_date_till');	
-                        $table_str .=   $this->convertDate($uniqueResults[$i]['diavgeia_last_update']);
-                        $table_str .= ']</br>';
-                    }
+                      if (isset($uniqueResults[$i]['awardCnt0']) && isset($uniqueResults[$i]['awardCnt1']) && isset($uniqueResults[$i]['awardCnt2'])){
+                           $table_str .=  ' ('.round(($uniqueResults[$i]['awardCnt0']+$uniqueResults[$i]['awardCnt1']+$uniqueResults[$i]['awardCnt2']),0).') '; 
+                      }
+                     #if (isset($uniqueResults[$i]['lastUpdate'])){
+                      #  $table_str .=   __('lang.advancedSearchResults_date_till');	
+                       # $table_str .=   $uniqueResults[$i]['lastUpdate'];
+                        #$table_str .= ']</br>';
+                   # }
                   $table_str .= '</div>';   
                  }
                  
-                 
-                
+                 //...show khmdhs....\\
+                 if ($uniqueResults[$i]['dataKhmdhs'] == 1){
+                       $table_str .= '<div>';   
+                       $source = __('lang.pubproc');
+                       $property = __('lang.seller');
+                       $table_str .= " <font  color='#006621' style='font-size: 0.82em'>$source</font> ";
+                       $table_str .= '&nbsp';
+                       #$table_str .= " <font color='FFA500' size='1'>$property</font> ";
+                       $table_str .=  __('lang.contracts_lbl');
+                       $table_str .= ':';
+                       $table_str .= '&nbsp';
+                       $sumContracts = $this->fromTextToNumber($uniqueResults[$i]['contractAmountPrev']) + $this->fromTextToNumber($uniqueResults[$i]['contractAmountCur'])  ;
+                       $table_str .=  ''.$this->fromNumberToText($sumContracts,'€').'';
+                       $table_str .=   ' ('.round(($uniqueResults[$i]['contractItemsNo']),0).') ';
+                       $table_str .=  __('lang.payments_lbl');
+                       $table_str .= ':';
+                       $table_str .= '&nbsp';
+                       $sumPayments = $this->fromTextToNumber($uniqueResults[$i]['paymentAmountPrev']) + $this->fromTextToNumber($uniqueResults[$i]['paymentAmountCur'])  ;
+                       $table_str .=  ''.$this->fromNumberToText($sumPayments,'€').'';
+                       $table_str .=   ' ('.round(($uniqueResults[$i]['paymentItemsNo']),0).') ';
+                       if (isset($uniqueResults[$i]['ks_lastUpdate'])){
+                      #    $table_str .=   __('lang.advancedSearchResults_date_till');	
+                       #   $table_str .=   $uniqueResults[$i]['ks_lastUpdate'];
+                        #  $table_str .= ']</br>';
+                       }
+                       $table_str .= '</div>';  
+                      # $table_str .=   ' &nbsp [έως '.$uniqueResults[$i]['ks_lastUpdate'].']</br>';
+                 }
                   //...show espa....\\
                  if ($uniqueResults[$i]['dataEspa'] == 1){
                      $table_str .= '<div>';  
@@ -509,30 +453,82 @@ class showResults {
                      $table_str .=  __('lang.contracts_lbl');
                      $table_str .= ':';
                      $table_str .= '&nbsp';
-                     $table_str .=  ''.$uniqueResults[$i]['espa_contracts_amount'].'';
-                     $table_str .=   ' ('.round(($uniqueResults[$i]['espa_contracts_cnt']),0).') ';
-                    # $table_str .=  ''.$uniqueResults[$i]['SubsContractsAmount'].'';
-                    # $table_str .=   ' ('.round(($uniqueResults[$i]['SubsContractsCounter']),0).') ';
-                    # $table_str .=  __('lang.payments_lbl');
-                    # $table_str .= ':';
-                    # $table_str .= '&nbsp';
-                    # $table_str .= ''.$uniqueResults[$i]['SubsPaymentsAmount'].'';
-                    # $table_str .=  ' ('.round(($uniqueResults[$i]['SubsPaymentsCounter']),0).') ';
-                     if (isset($uniqueResults[$i]['espa_last_update'])){
+                     $table_str .=  ''.$uniqueResults[$i]['SubsContractsAmount'].'';
+                     $table_str .=   ' ('.round(($uniqueResults[$i]['SubsContractsCounter']),0).') ';
+                     $table_str .=  __('lang.payments_lbl');
+                     $table_str .= ':';
+                     $table_str .= '&nbsp';
+                     $table_str .= ''.$uniqueResults[$i]['SubsPaymentsAmount'].'';
+                     $table_str .=  ' ('.round(($uniqueResults[$i]['SubsPaymentsCounter']),0).') ';
+                     if (isset($uniqueResults[$i]['espa_lastUpdate'])){
                         $table_str .=   __('lang.advancedSearchResults_date_till');	
-                        $table_str .=   $uniqueResults[$i]['espa_last_update'];
+                        $table_str .=   $uniqueResults[$i]['espa_lastUpdate'];
                         $table_str .= ']</br>';
                     }
                      $table_str .= '</div>';  
                     #$table_str .=   ' &nbsp [έως '.$this->convertDate($uniqueResults[$i]['espa_lastUpdate']).']</br>';
                  }
                    //...show australia....\\
-               
+                 if ($uniqueResults[$i]['dataAustralia'] == 1){
+                       $table_str .= '<div>';  
+                       $source = __('lang.australia');
+                       $property = __('lang.seller');
+                       $table_str .=  " <font  color='#006621' style='font-size: 0.82em'>$source</font> ";
+                       #$table_str .= " <font color='#FFA500' size='1'>$property</font> "; 
+                       $table_str .= '&nbsp';
+                       $table_str .=  __('lang.contracts_lbl');
+                       $table_str .= ':';
+                       $table_str .= '&nbsp';
+		       $sumContracts = $this->fromTextToNumber($uniqueResults[$i]['contractAmount0']) + $this->fromTextToNumber($uniqueResults[$i]['contractAmount1'])  + $this->fromTextToNumber($uniqueResults[$i]['contractAmount2'])    ;
+                       $table_str .= ''.$this->fromNumberToText($sumContracts,'$').'';
+                       $table_str .= '&nbsp';
+                       $counterContracts = 0;
+                        if (is_numeric($uniqueResults[$i]['contractCounter0'])){
+                            $counterContracts +=$uniqueResults[$i]['contractCounter0'];
+                        }
+                        if (is_numeric($uniqueResults[$i]['contractCounter1'])){
+                            $counterContracts +=$uniqueResults[$i]['contractCounter1'];
+                        }                       
+                        if (is_numeric($uniqueResults[$i]['contractCounter2'])){
+                            $counterContracts +=$uniqueResults[$i]['contractCounter2'];
+                        }
+                       
+                       $table_str .= '('.round($counterContracts,0).') ';
+                       if (isset($uniqueResults[$i]['lastUpdate'])){
+                           # $table_str .=   __('lang.advancedSearchResults_date_till');	
+                            #$table_str .=   $uniqueResults[$i]['lastUpdate'];
+                            #$table_str .= ']</br>';
+                      }
+                      $table_str .= '</div>'; 
+                      # $table_str .= ' &nbsp [Έως '.$uniqueResults[$i]['lastUpdate'].']</br>';
+                 }
                 
                    
                  
                  
-               
+               //....show ted...\\
+                 
+                 if ($uniqueResults[$i]['dataTed'] == 1){
+                     $table_str .= '<div>'; 
+                     $source = __('lang.ted');
+                     $property = __('lang.seller');
+                     $sumAmount = $uniqueResults[$i]['tedSumofAmounts'];
+                     $counterContracts = $uniqueResults[$i]['tedContracts'];
+                     $table_str .=  " <font  color='#006621' style='font-size: 0.82em'>$source</font> ";
+                     #$table_str .= " <font color='#FFA500' size='1'>$property</font> "; 
+                     $table_str .= '&nbsp';
+                     $table_str .=  __('lang.contracts_lbl');      
+                     $table_str .= '&nbsp';
+                     $table_str .= $this->fromNumberToText(preg_replace('/\D/', '', $sumAmount),'€');
+                     $table_str .= '('.round($counterContracts,0).')'; 
+                     #if (isset($uniqueResults[$i]['lastUpdate'])){
+                    # $table_str .=   __('lang.advancedSearchResults_date_till');	
+                     #$table_str .=   '2017';
+                    # $table_str .= ']</br>';
+                     #}
+                     #$table_str .= ' &nbsp [Έως 2017]</br>';
+                      $table_str .= '</div>'; 
+                 }
               
                 
                 
@@ -667,67 +663,56 @@ class showResults {
                       'status' => $newdata['status'],     
                       'dataNoGemh'=> $newdata['dataNoGemh'],  
                       'dataGemh'=>  $newdata['dataGemh'],
-                     
-                      'dataDiaugeia'=>  $newdata['dataDiaugeia'],                     
+                      'dataTed' => $newdata['dataTed'],
+                      'dataDiaugeia'=>  $newdata['dataDiaugeia'],
+                      'dataKhmdhs'=>  $newdata['dataKhmdhs'],
                       'dataEspa'=>  $newdata['dataEspa'],  
-                      
-                      'diavgeia_approvals_amount'=>  $newdata['diavgeia_approvals_amount'], 
-                      'diavgeia_approvals_cnt'=>  $newdata['diavgeia_approvals_cnt'], 
-                      'diavgeia_payments_amount'=>  $newdata['diavgeia_payments_amount'], 
-                      'diavgeia_payments_cnt'=>  $newdata['diavgeia_payments_cnt'], 
-                      'diavgeia_last_update'=> $newdata['diavgeia_last_update'], 
-                      
-                      
-                      'espa_contracts_amount'=>  $newdata['espa_contracts_amount'], 
-                      'espa_contracts_cnt'=>  $newdata['espa_contracts_cnt'], 
-                      
-                      'espa_last_update'=> $newdata['espa_last_update'], 
-                    
+                      'dataAustralia'=>  $newdata['dataAustralia'],  
                      
                       
                       
                       ///////TED
-                     # 'tedSumofAmounts' => $newdata['tedSumofAmounts'],
-                     # 'tedContracts' => $newdata['tedContracts'],
+                      'tedSumofAmounts' => $newdata['tedSumofAmounts'],
+                      'tedContracts' => $newdata['tedContracts'],
                       
                       //////diaugeia                      
-                   #   'award0' => $newdata['award0'],
-                    #  'award1'=> $newdata['award1'] ,
-                     # 'award2'=> $newdata['award2'] ,
-                     # 'awardCnt0'=> $newdata['awardCnt0'] ,
-                     # 'awardCnt1'=> $newdata['awardCnt1'],
-                     # 'awardCnt2'=> $newdata['awardCnt2'] ,                    
-                     # 'spend0'=> $newdata['spend0']  ,
-                     # 'spend1'=> $newdata['spend1'] ,
-                     # 'spend2'=> $newdata['spend2'],
-                     # 'spendCnt0'=>  $newdata['spendCnt0'] ,
-                     # 'spendCnt1'=>  $newdata['spendCnt1'] ,
-                     # 'spendCnt2'=> $newdata['spendCnt2'] ,
-                     # 'lastUpdate'=> $newdata['lastUpdate']  ,
+                      'award0' => $newdata['award0'],
+                      'award1'=> $newdata['award1'] ,
+                      'award2'=> $newdata['award2'] ,
+                      'awardCnt0'=> $newdata['awardCnt0'] ,
+                      'awardCnt1'=> $newdata['awardCnt1'],
+                      'awardCnt2'=> $newdata['awardCnt2'] ,                    
+                      'spend0'=> $newdata['spend0']  ,
+                      'spend1'=> $newdata['spend1'] ,
+                      'spend2'=> $newdata['spend2'],
+                      'spendCnt0'=>  $newdata['spendCnt0'] ,
+                      'spendCnt1'=>  $newdata['spendCnt1'] ,
+                      'spendCnt2'=> $newdata['spendCnt2'] ,
+                      'lastUpdate'=> $newdata['lastUpdate']  ,
                       
                       ///khmdhs                      
-                   #   'contractAmountPrev'=> $newdata['contractAmountPrev']  ,
-                   #   'contractAmountCur'=> $newdata['contractAmountCur']  ,                     
-                   #   'paymentAmountPrev'=> $newdata['paymentAmountPrev'] ,
-                   #   'paymentAmountCur'=> $newdata['paymentAmountCur']  ,                      	  
-                   #   'contractItemsNo'=>  $newdata['contractItemsNo']  ,
-                   #   'paymentItemsNo'=>   $newdata['paymentItemsNo'] ,
-                   #   'ks_lastUpdate'=> $newdata['ks_lastUpdate'], 
+                      'contractAmountPrev'=> $newdata['contractAmountPrev']  ,
+                      'contractAmountCur'=> $newdata['contractAmountCur']  ,                     
+                      'paymentAmountPrev'=> $newdata['paymentAmountPrev'] ,
+                      'paymentAmountCur'=> $newdata['paymentAmountCur']  ,                      	  
+                      'contractItemsNo'=>  $newdata['contractItemsNo']  ,
+                      'paymentItemsNo'=>   $newdata['paymentItemsNo'] ,
+                      'ks_lastUpdate'=> $newdata['ks_lastUpdate'], 
                       
                       //espa
-                   #   'SubsContractsAmount'=> $newdata['SubsContractsAmount']  ,
-                   #   'SubsPaymentsAmount'=> $newdata['SubsPaymentsAmount']   ,	
-                   #   'SubsContractsCounter'=> $newdata['SubsContractsCounter']  ,
-                   #   'SubsPaymentsCounter'=> $newdata['SubsPaymentsCounter'] ,  
-                   #   'espa_lastUpdate'=> $newdata['espa_lastUpdate']  ,
+                      'SubsContractsAmount'=> $newdata['SubsContractsAmount']  ,
+                      'SubsPaymentsAmount'=> $newdata['SubsPaymentsAmount']   ,	
+                      'SubsContractsCounter'=> $newdata['SubsContractsCounter']  ,
+                      'SubsPaymentsCounter'=> $newdata['SubsPaymentsCounter'] ,  
+                      'espa_lastUpdate'=> $newdata['espa_lastUpdate']  ,
                       
                        //australia
-                    #  'contractAmount0'=>  (isset($newdata['contractAmount0'] ) ) ? $newdata['contractAmount0']  : 0 ,
-                    #  'contractAmount1'=>  (isset($newdata['contractAmount1'] ) ) ? $newdata['contractAmount1']  : 0 ,
-                    #  'contractAmount2'=> (isset($newdata['contractAmount2'] ) ) ? $newdata['contractAmount2']  : 0 ,
-                    #  'contractCounter0'=> (isset($newdata['contractCounter0'] ) ) ? $newdata['contractCounter0']  : 0 ,
-                    #  'contractCounter1'=> (isset($newdata['contractCounter1'] ) ) ? $newdata['contractCounter1']  : 0 ,
-                    #  'contractCounter2'=>(isset($newdata['contractCounter2'] ) ) ? $newdata['contractCounter2']  : 0 ,
+                      'contractAmount0'=>  (isset($newdata['contractAmount0'] ) ) ? $newdata['contractAmount0']  : 0 ,
+                      'contractAmount1'=>  (isset($newdata['contractAmount1'] ) ) ? $newdata['contractAmount1']  : 0 ,
+                      'contractAmount2'=> (isset($newdata['contractAmount2'] ) ) ? $newdata['contractAmount2']  : 0 ,
+                      'contractCounter0'=> (isset($newdata['contractCounter0'] ) ) ? $newdata['contractCounter0']  : 0 ,
+                      'contractCounter1'=> (isset($newdata['contractCounter1'] ) ) ? $newdata['contractCounter1']  : 0 ,
+                      'contractCounter2'=>(isset($newdata['contractCounter2'] ) ) ? $newdata['contractCounter2']  : 0 ,
                         
                       
                   ];
@@ -735,17 +720,13 @@ class showResults {
               }
               else {
                   #$uniqueResults[$newdata['vat']]['dataTed'] = $newdata['dataTed']; 
-                # $uniqueResults[$newdata['vat']]['dataNoGemh'] = $checkData->defineSource($newdata['db'], 'dataNoGemh',$uniqueResults[$newdata['vat']]['dataNoGemh'],$newdata['dataTed']);
-                  $uniqueResults[$newdata['vat']]['dataNoGemh'] = $checkData->defineSource($newdata['db'], 'dataNoGemh',$uniqueResults[$newdata['vat']]['dataNoGemh'],0);
-                # $uniqueResults[$newdata['vat']]['dataGemh'] = $checkData->defineSource($newdata['db'], 'dataGemh',$uniqueResults[$newdata['vat']]['dataGemh'],$newdata['dataTed']);
-                  $uniqueResults[$newdata['vat']]['dataGemh'] = $checkData->defineSource($newdata['db'], 'dataGemh',$uniqueResults[$newdata['vat']]['dataGemh'],0);
-               #   $uniqueResults[$newdata['vat']]['dataTed'] = $checkData->defineSource($newdata['db'], 'dataTed',$uniqueResults[$newdata['vat']]['dataTed'],$newdata['dataTed']);                
-                  #$uniqueResults[$newdata['vat']]['dataDiaugeia'] = $checkData->defineSource($newdata['db'], 'dataDiaugeia',$uniqueResults[$newdata['vat']]['dataDiaugeia'],$newdata['dataTed']);
-                  $uniqueResults[$newdata['vat']]['dataDiaugeia'] = $checkData->defineSource($newdata['db'], 'dataDiaugeia',$uniqueResults[$newdata['vat']]['dataDiaugeia'],0);
-                #  $uniqueResults[$newdata['vat']]['dataKhmdhs'] = $checkData->defineSource($newdata['db'], 'dataKhmdhs',$uniqueResults[$newdata['vat']]['dataKhmdhs'],$newdata['dataTed']);
-                 # $uniqueResults[$newdata['vat']]['dataEspa'] = $checkData->defineSource($newdata['db'], 'dataEspa',$uniqueResults[$newdata['vat']]['dataEspa'],$newdata['dataTed']);
-                  $uniqueResults[$newdata['vat']]['dataEspa'] = $checkData->defineSource($newdata['db'], 'dataEspa',$uniqueResults[$newdata['vat']]['dataEspa'],0);
-                 # $uniqueResults[$newdata['vat']]['dataAustralia'] = $checkData->defineSource($newdata['db'], 'dataAustralia',$uniqueResults[$newdata['vat']]['dataAustralia'],$newdata['dataTed']);
+                  $uniqueResults[$newdata['vat']]['dataNoGemh'] = $checkData->defineSource($newdata['db'], 'dataNoGemh',$uniqueResults[$newdata['vat']]['dataNoGemh'],$newdata['dataTed']);
+                  $uniqueResults[$newdata['vat']]['dataGemh'] = $checkData->defineSource($newdata['db'], 'dataGemh',$uniqueResults[$newdata['vat']]['dataGemh'],$newdata['dataTed']);
+                  $uniqueResults[$newdata['vat']]['dataTed'] = $checkData->defineSource($newdata['db'], 'dataTed',$uniqueResults[$newdata['vat']]['dataTed'],$newdata['dataTed']);                
+                  $uniqueResults[$newdata['vat']]['dataDiaugeia'] = $checkData->defineSource($newdata['db'], 'dataDiaugeia',$uniqueResults[$newdata['vat']]['dataDiaugeia'],$newdata['dataTed']);
+                  $uniqueResults[$newdata['vat']]['dataKhmdhs'] = $checkData->defineSource($newdata['db'], 'dataKhmdhs',$uniqueResults[$newdata['vat']]['dataKhmdhs'],$newdata['dataTed']);
+                  $uniqueResults[$newdata['vat']]['dataEspa'] = $checkData->defineSource($newdata['db'], 'dataEspa',$uniqueResults[$newdata['vat']]['dataEspa'],$newdata['dataTed']);
+                  $uniqueResults[$newdata['vat']]['dataAustralia'] = $checkData->defineSource($newdata['db'], 'dataAustralia',$uniqueResults[$newdata['vat']]['dataAustralia'],$newdata['dataTed']);
                   
                  if  ($uniqueResults[$newdata['vat']]['orgType']=='' || !isset($uniqueResults[$newdata['vat']]['orgType'])){
                       $uniqueResults[$newdata['vat']]['orgType'] =  $newdata['orgType'];
@@ -778,51 +759,60 @@ class showResults {
                  
                   
                 if ($newdata['dataDiaugeia'] == 1){
-                   #    $uniqueResults[$newdata['vat']]['award0'] =  $newdata['award0'];
-                    #   $uniqueResults[$newdata['vat']]['award1'] =  $newdata['award1'];
-                    #   $uniqueResults[$newdata['vat']]['award2'] =  $newdata['award2'];
+                       $uniqueResults[$newdata['vat']]['award0'] =  $newdata['award0'];
+                       $uniqueResults[$newdata['vat']]['award1'] =  $newdata['award1'];
+                       $uniqueResults[$newdata['vat']]['award2'] =  $newdata['award2'];
                        
-                     #  $uniqueResults[$newdata['vat']]['awardCnt0'] =  $newdata['awardCnt0'];
-                      # $uniqueResults[$newdata['vat']]['awardCnt1'] =  $newdata['awardCnt1'];
-                       #$uniqueResults[$newdata['vat']]['awardCnt2'] =  $newdata['awardCnt2'];
+                       $uniqueResults[$newdata['vat']]['awardCnt0'] =  $newdata['awardCnt0'];
+                       $uniqueResults[$newdata['vat']]['awardCnt1'] =  $newdata['awardCnt1'];
+                       $uniqueResults[$newdata['vat']]['awardCnt2'] =  $newdata['awardCnt2'];
                        
-                       #if (isset($newdata['spend0'])){
-                        #   $uniqueResults[$newdata['vat']]['spend0'] =  $newdata['spend0'];
-                      # }
-                       #else {
-                        #    $uniqueResults[$newdata['vat']]['spend0'] = 0;
-                       #}
+                       if (isset($newdata['spend0'])){
+                           $uniqueResults[$newdata['vat']]['spend0'] =  $newdata['spend0'];
+                       }
+                       else {
+                            $uniqueResults[$newdata['vat']]['spend0'] = 0;
+                       }
                        
-                      # $uniqueResults[$newdata['vat']]['spend1'] =  $newdata['spend1'];
-                       #$uniqueResults[$newdata['vat']]['spend2'] =  $newdata['spend2'];
+                       $uniqueResults[$newdata['vat']]['spend1'] =  $newdata['spend1'];
+                       $uniqueResults[$newdata['vat']]['spend2'] =  $newdata['spend2'];
                        
-                      # $uniqueResults[$newdata['vat']]['spendCnt0'] =  $newdata['spendCnt0'];
-                       #$uniqueResults[$newdata['vat']]['spendCnt1'] =  $newdata['spendCnt1'];
-                       #$uniqueResults[$newdata['vat']]['spendCnt2'] =  $newdata['spendCnt2'];
+                       $uniqueResults[$newdata['vat']]['spendCnt0'] =  $newdata['spendCnt0'];
+                       $uniqueResults[$newdata['vat']]['spendCnt1'] =  $newdata['spendCnt1'];
+                       $uniqueResults[$newdata['vat']]['spendCnt2'] =  $newdata['spendCnt2'];
                        
-                     #  $uniqueResults[$newdata['vat']]['lastUpdate'] =  $newdata['lastUpdate'];
+                       $uniqueResults[$newdata['vat']]['lastUpdate'] =  $newdata['lastUpdate'];
                       
                   }
                   
-               
+                if ($newdata['dataKhmdhs'] == 1){
+                       $uniqueResults[$newdata['vat']]['contractAmountPrev'] =  $newdata['contractAmountPrev'];
+                       $uniqueResults[$newdata['vat']]['contractAmountCur'] =  $newdata['contractAmountCur'];
+                       $uniqueResults[$newdata['vat']]['paymentAmountPrev'] =  $newdata['paymentAmountPrev'];
+                       $uniqueResults[$newdata['vat']]['contractItemsNo'] =  $newdata['contractItemsNo'];
+                       $uniqueResults[$newdata['vat']]['contractItemsNo'] =  $newdata['contractItemsNo'];
+                       $uniqueResults[$newdata['vat']]['paymentItemsNo'] =  $newdata['paymentItemsNo'];
+                       $uniqueResults[$newdata['vat']]['ks_lastUpdate'] =  $newdata['ks_lastUpdate'];
+                       
+                  }
                   
                 if ($newdata['dataEspa'] == 1) {
-                   # $uniqueResults[$newdata['vat']]['SubsContractsAmount'] =  $newdata['SubsContractsAmount'];
-                    #$uniqueResults[$newdata['vat']]['SubsPaymentsAmount'] =  $newdata['SubsPaymentsAmount'];                    
-                    #$uniqueResults[$newdata['vat']]['SubsContractsCounter'] =  $newdata['SubsContractsCounter'];
-                    #$uniqueResults[$newdata['vat']]['SubsPaymentsCounter'] =  $newdata['SubsPaymentsCounter'];
-                    #$uniqueResults[$newdata['vat']]['espa_lastUpdate'] =  $newdata['espa_lastUpdate'];
+                    $uniqueResults[$newdata['vat']]['SubsContractsAmount'] =  $newdata['SubsContractsAmount'];
+                    $uniqueResults[$newdata['vat']]['SubsPaymentsAmount'] =  $newdata['SubsPaymentsAmount'];                    
+                    $uniqueResults[$newdata['vat']]['SubsContractsCounter'] =  $newdata['SubsContractsCounter'];
+                    $uniqueResults[$newdata['vat']]['SubsPaymentsCounter'] =  $newdata['SubsPaymentsCounter'];
+                    $uniqueResults[$newdata['vat']]['espa_lastUpdate'] =  $newdata['espa_lastUpdate'];
                 } 
                 
-               # if ($newdata['dataAustralia'] == 1){
-                   # $uniqueResults[$newdata['vat']]['contractAmount0'] =  $newdata['contractAmount0'];
-                   # $uniqueResults[$newdata['vat']]['contractAmount1'] =  $newdata['contractAmount1'];                    
-                   # $uniqueResults[$newdata['vat']]['contractAmount2'] =  $newdata['contractAmount2'];
-                   # $uniqueResults[$newdata['vat']]['contractCounter0'] =  $newdata['contractCounter0'];
-                   # $uniqueResults[$newdata['vat']]['contractCounter1'] =  $newdata['contractCounter1'];
-                   # $uniqueResults[$newdata['vat']]['contractCounter2'] =  $newdata['contractCounter2'];
+                if ($newdata['dataAustralia'] == 1){
+                    $uniqueResults[$newdata['vat']]['contractAmount0'] =  $newdata['contractAmount0'];
+                    $uniqueResults[$newdata['vat']]['contractAmount1'] =  $newdata['contractAmount1'];                    
+                    $uniqueResults[$newdata['vat']]['contractAmount2'] =  $newdata['contractAmount2'];
+                    $uniqueResults[$newdata['vat']]['contractCounter0'] =  $newdata['contractCounter0'];
+                    $uniqueResults[$newdata['vat']]['contractCounter1'] =  $newdata['contractCounter1'];
+                    $uniqueResults[$newdata['vat']]['contractCounter2'] =  $newdata['contractCounter2'];
                       
-                #}
+                }
                      
                 $uniqueResults[$newdata['vat']]['score'] *= 1.1;
                   
@@ -1149,10 +1139,6 @@ class showResults {
             $domain = "http://dashboard.linkedbusiness.eu/";
         }
         return $domain;
-    }
-    
-    function tempFixPersonCompany($link){
-        return str_replace('/person/', '/company/', $link);
     }
     
 

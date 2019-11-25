@@ -109,12 +109,23 @@ if (in_array(str_replace('.','-',Route::currentRouteName()), $less_pages)) { ?>
                 <div class="col-auto">
 
                     <div class="row no-gutters align-items-center justify-content-end">
+                    	@if(isset($stst))
+                    	@if(((Auth::user()->product==2 || Auth::user()->role_id==3) || (Auth::user()->product==1 && $stst[0] - $stst[1]>0)) && isset($stst)) 
+                    	  
+							<img class="flag mr-2" src="{{route('home')}}/images/svg/wait.svg" width=16 height=16></i> {{ $stst[0] - $stst[1] }}
+
+                    	@endif
+                    	@endif
 
                         <div class="user-menu-button dropdown">
 
                             <div class="dropdown-toggle ripple row align-items-center no-gutters px-2 px-sm-4 fuse-ripple-ready" role="button" id="dropdownUserMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <div class="avatar-wrapper">
+                                	@if(Auth::user()->logo==null)
                                     <img class="avatar" src="{{route('home')}}/avatars/profile.jpg">
+                                    @else
+                                    <img class="" src="/userlogos/{{ Auth::user()->logo }}" height=60>
+                                    @endif
                                     <i class="status text-green icon-checkbox-marked-circle s-4"></i>
                                 </div>
                                 <span class="username mx-3 d-none d-md-block">{{ Auth::user()->name }}</span>
@@ -126,7 +137,7 @@ if (in_array(str_replace('.','-',Route::currentRouteName()), $less_pages)) { ?>
 									<a class="dropdown-item fuse-ripple-ready" href="{{route('home')}}/{{$lang}}/admin">
 										<div class="row no-gutters align-items-center flex-nowrap">
 											<i class="icon-table-large"></i>
-											<span class="px-3">gr</span>
+											<span class="px-3">{{ __('lang.useradmin_lbl') }}</span>
 										</div>
 									</a>
 
@@ -135,7 +146,7 @@ if (in_array(str_replace('.','-',Route::currentRouteName()), $less_pages)) { ?>
 									<a class="dropdown-item fuse-ripple-ready" href="{{route('home')}}/{{$lang}}/feedback">
 										<div class="row no-gutters align-items-center flex-nowrap">
 											<i class="icon-table-large"></i>
-											<span class="px-3">gr</span>
+											<span class="px-3">{{ __('lang.feedback_lbl') }}</span>
 										</div>
 									</a>
 
@@ -144,7 +155,7 @@ if (in_array(str_replace('.','-',Route::currentRouteName()), $less_pages)) { ?>
 									<a class="dropdown-item fuse-ripple-ready" href="{{route('home')}}/{{$lang}}/notifications">
 										<div class="row no-gutters align-items-center flex-nowrap">
 											<i class="icon-table-large"></i>
-											<span class="px-3">gr</span>
+											<span class="px-3">{{ __('lang.notifications_lbl') }}</span>
 										</div>
 									</a>
 
@@ -155,7 +166,7 @@ if (in_array(str_replace('.','-',Route::currentRouteName()), $less_pages)) { ?>
 								<a class="dropdown-item fuse-ripple-ready" href="{{route('home')}}/{{$lang}}/profile/{{ Auth::user()->name }}/info">
                                     <div class="row no-gutters align-items-center flex-nowrap">
                                         <i class="icon-account"></i>
-                                        <span class="px-3">gr</span>
+                                        <span class="px-3">{{ __('lang.myProfile') }}</span>
                                     </div>
                                 </a>
 								
@@ -164,7 +175,7 @@ if (in_array(str_replace('.','-',Route::currentRouteName()), $less_pages)) { ?>
                                 <a id="feedback-link" class="dropdown-item fuse-ripple-ready" href="#" data-toggle="modal" data-target="#feedbackModal">
                                     <div class="row no-gutters align-items-center flex-nowrap">
                                         <i class="icon-repeat"></i>
-                                        <span class="px-3">gr</span>
+                                        <span class="px-3">{{ __('lang.feedback') }}</span>
                                     </div>
                                 </a>
 
@@ -174,7 +185,7 @@ if (in_array(str_replace('.','-',Route::currentRouteName()), $less_pages)) { ?>
                                                      document.getElementById('logout-form').submit();">
                                     <div class="row no-gutters align-items-center flex-nowrap">
                                         <i class="icon-logout"></i>
-                                        <span class="px-3">gr</span>
+                                        <span class="px-3">{{ __('lang.logout') }}</span>
                                     </div>
                                 </a>
 								
@@ -187,7 +198,7 @@ if (in_array(str_replace('.','-',Route::currentRouteName()), $less_pages)) { ?>
 
                         <div class="toolbar-separator"></div>
 
-                        <div class="language-button dropdown">
+                       <!--  <div class="language-button dropdown">
 
                             <div class="dropdown-toggle ripple row align-items-center justify-content-center no-gutters px-0 px-sm-4 fuse-ripple-ready" role="button" id="dropdownLanguageMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <div class="row no-gutters align-items-center">
@@ -231,17 +242,17 @@ if (in_array(str_replace('.','-',Route::currentRouteName()), $less_pages)) { ?>
                                 </a>
 								
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="toolbar-separator"></div>
 
-                        <button type="button" id="openSearchTop" class="search-button btn btn-icon fuse-ripple-ready">
+                        <a href="{{route('home')}}/{{$lang}}/search"><button type="button" id="old=openSearchTop" class="search-button btn btn-icon fuse-ripple-ready">
                         	<i class="icon icon-magnify"></i>
-                        </button>
+                        </button></a>
                             
                         <div class="toolbar-separator"></div>
 
-                        <button type="button" class="quick-panel-button btn btn-icon fuse-ripple-ready" data-toggle="modal" data-target="#feedbackModal" title="gr">
+                        <button type="button" class="quick-panel-button btn btn-icon fuse-ripple-ready" data-toggle="modal" data-target="#feedbackModal" title="{{ __('lang.feedback') }}">
                             <i class="icon icon-comment-alert-outline"></i>
                         </button>
 
@@ -264,7 +275,7 @@ if (in_array(str_replace('.','-',Route::currentRouteName()), $less_pages)) { ?>
 		    
 		    <form method="post" action="{{ route('home') }}/{{ $lang }}/topsearch/" id="topSearch">
 				<input name="_token" type="hidden" value="{{ csrf_token() }}">
-				<input class="searchbox" id="fuse-search-bar-input" name="searchKey" placeholder="gr" type="text">			 			   
+				<input class="searchbox" id="fuse-search-bar-input" name="searchKey" placeholder="{{ __('lang.searchLabel') }}" type="text">			 			   
 			</form>
 		</div>
 		
@@ -278,25 +289,25 @@ if (in_array(str_replace('.','-',Route::currentRouteName()), $less_pages)) { ?>
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title" id="exampleModalLabel">gr</h5>
+						<h5 class="modal-title" id="exampleModalLabel">{{ __('lang.feedback') }}</h5>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 							<span aria-hidden="true">&times;</span>
 						</button>
 					</div>
 					<div class="modal-body">
                         <div id="error-modal" class="alert alert-danger" role="alert"></div>
-                        <div class="alert alert-success" role="alert">gr</div>
+                        <div class="alert alert-success" role="alert">{{ __('lang.feedback_success') }}</div>
 						<form id="feedback_form">    
 							<input type="hidden" id="feedback_url" name="feedback_url" value="{{ url()->current() }}">
 							<div class="form-group">
-								<label for="message-text" class="form-control-label">gr:</label>
+								<label for="message-text" class="form-control-label">{{ __('lang.message_lbl') }}:</label>
 								<textarea class="form-control feedbacktxt" id="message-text" name="feeadback_message" required></textarea>
 							</div>
 						</form>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">gr</button>
-						<button type="button" class="btn btn-primary" id="send-feedback">gr</button>
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('lang.cancel') }}</button>
+						<button type="button" class="btn btn-primary" id="send-feedback">{{ __('lang.send_message') }}</button>
 					</div>
 				</div>
 			</div>
@@ -363,7 +374,7 @@ if (in_array(str_replace('.','-',Route::currentRouteName()), $less_pages)) { ?>
 
                 } else {
                     //console.log('error: field is empty');
-                    $("#error-modal").html("<strong>gr!</strong> gr.");
+                    $("#error-modal").html("<strong>{{ __('lang.warning') }}!</strong> {{ __('lang.feedback_error') }}.");
                     $("#error-modal").show();
                     $(".alert-success").hide();
                 }
@@ -376,10 +387,23 @@ if (in_array(str_replace('.','-',Route::currentRouteName()), $less_pages)) { ?>
         @yield('content')
 
 
-        <footer>
-		  <p>Created by <a href="https://mainsys.eu/" target="_blank">MainSys</a></p>		  
-		</footer>
+       
 	
 
 </body>
+ <footer>
+        	<br>
+        	
+        
+        	<div class="row" style="text-align: right; background-color: #D9D9D9; color: #000000; position: fixed; left: 0 ; right: 0; bottom: 0;  height:30px; line-height: 200%;">
+        		    <div class="col-6 col-lg-6" style="text-align: left;">
+        		    	 &emsp;&emsp;<a href="http://greece.linkedbusiness.eu/" style="color:#0275d8;"> Αρχική</a>  &emsp;&emsp;    <a href="http://greece.linkedbusiness.eu/Terms" style="color:#0275d8;">Όροι Χρήσης</a>   &emsp;&emsp;   <a href="http://greece.linkedbusiness.eu/data-policy" style="color:#0275d8;">Προσωπικά Δεδομένα</a> &emsp;&emsp;
+        		    </div>
+        		    <div class="col-6 col-lg-6">
+        		    	 &emsp;&emsp;© 2018, Linkedbusiness.gr/eu, v1.11.01, All Rights Reserved. &emsp;&emsp;
+        		    </div>					
+		    </div>	
+		    	
+		   
+		</footer>
 </html>
